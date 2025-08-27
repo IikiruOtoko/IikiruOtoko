@@ -3,6 +3,23 @@ const IMAGE_ASPECT_RATIO = 908 / 1604; // 横:縦 = 約 0.566
 const IMAGE_WIDTH = 908;
 const IMAGE_HEIGHT = 1604;
 
+// 画像ファイルのリスト（プリロード用）
+const IMAGE_FILES = [
+    'images/image1.png',
+    'images/image2_1.png',
+    'images/image2_2.png',
+    'images/image2_3.png',
+    'images/image2_4.png',
+    'images/image2_5.png',
+    'images/image2_6.png',
+    'images/image2_7.png',
+    'images/image2_8.png',
+    'images/image3.png'
+];
+
+// プリロードされた画像のキャッシュ
+const imageCache = new Map();
+
 // DOM要素の取得
 const questionForm = document.getElementById('question-form');
 const questionInput = document.getElementById('question-input');
@@ -37,6 +54,44 @@ function getApiKey() {
 
 // APIキーを初期化
 AWAN_API_KEY = getApiKey();
+
+// プリロードされた画像を使用して画像を設定する関数
+function setImageFromCache(imgElement, imagePath) {
+    if (imageCache.has(imagePath)) {
+        imgElement.src = imageCache.get(imagePath).src;
+    } else {
+        imgElement.src = imagePath;
+    }
+}
+
+// 画像をプリロードする関数
+async function preloadImages() {
+    console.log('🖼️ 画像のプリロードを開始...');
+    let loadedCount = 0;
+    const loadPromises = IMAGE_FILES.map(imagePath => {
+        return new Promise((resolve, reject) => {
+            const img = new Image();
+            img.onload = () => {
+                imageCache.set(imagePath, img);
+                loadedCount++;
+                console.log(`✅ ${imagePath} をプリロード完了 (${loadedCount}/${IMAGE_FILES.length})`);
+                resolve(imagePath);
+            };
+            img.onerror = () => {
+                console.error(`❌ ${imagePath} のプリロードに失敗`);
+                reject(new Error(`Failed to load ${imagePath}`));
+            };
+            img.src = imagePath;
+        });
+    });
+    
+    try {
+        await Promise.all(loadPromises);
+        console.log('🎉 すべての画像のプリロードが完了しました！');
+    } catch (error) {
+        console.error('画像のプリロード中にエラーが発生:', error);
+    }
+}
 
 // 画像サイズを動的に計算する関数
 function calculateImageSize() {
@@ -107,7 +162,8 @@ questionForm.addEventListener('submit', async (e) => {
         loadingArea.classList.remove('hidden');
         
         // ローディング画像をimage2_1.pngに設定（前回のimage3.pngを上書き）
-        loadingImage.src = 'image2_1.png';
+        // プリロードされた画像を使用
+        setImageFromCache(loadingImage, 'images/image2_1.png');
         
         // APIリクエストを即座に送信（非同期で実行）
         const apiPromise = sendToAwanLLM(question);
@@ -147,41 +203,44 @@ let image3StartTime = 0;
 
 // 画像切り替えアニメーション
 async function performImageAnimation() {
+    const FIRST_GAP_TIME = 500;
+    const GAP_TIME = 350;
+
     // ボタン押下から0.5秒待機
-    await sleep(500);
+    await sleep(FIRST_GAP_TIME);
     
     // image2_2.pngに切り替え（0.5秒待機）
-    loadingImage.src = 'image2_2.png';
-    await sleep(500);
+    setImageFromCache(loadingImage, 'images/image2_2.png');
+    await sleep(GAP_TIME);
     
     // image2_3.pngに切り替え（0.5秒待機）
-    loadingImage.src = 'image2_3.png';
-    await sleep(500);
+    setImageFromCache(loadingImage, 'images/image2_3.png');
+    await sleep(GAP_TIME);
     
     // image2_4.pngに切り替え（0.5秒待機）
-    loadingImage.src = 'image2_4.png';
-    await sleep(500);
+    setImageFromCache(loadingImage, 'images/image2_4.png');
+    await sleep(GAP_TIME);
     
     // image2_5.pngに切り替え（0.5秒待機）
-    loadingImage.src = 'image2_5.png';
-    await sleep(500);
+    setImageFromCache(loadingImage, 'images/image2_5.png');
+    await sleep(GAP_TIME);
     
     // image2_6.pngに切り替え（0.5秒待機）
-    loadingImage.src = 'image2_6.png';
-    await sleep(500);
+    setImageFromCache(loadingImage, 'images/image2_6.png');
+    await sleep(GAP_TIME);
 
     // image2_7.pngに切り替え（0.5秒待機）
-    loadingImage.src = 'image2_7.png';
-    await sleep(500);
+    setImageFromCache(loadingImage, 'images/image2_7.png');
+    await sleep(GAP_TIME);
     
     // image2_8.pngに切り替え（0.5秒待機）
-    loadingImage.src = 'image2_8.png';
-    await sleep(500);
+    setImageFromCache(loadingImage, 'images/image2_8.png');
+    await sleep(GAP_TIME);
     
     // image3.pngに切り替え（時刻を記録）
-    loadingImage.src = 'image3.png';
+    setImageFromCache(loadingImage, 'images/image3.png');
     image3StartTime = Date.now();
-    await sleep(500);
+    // await sleep(GAP_TIME);
 }
 
 // 指定時間待機する関数
@@ -284,7 +343,10 @@ newQuestionBtn.addEventListener('click', () => {
 });
 
 // ページ読み込み時の初期化
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', async () => {
+    // 画像のプリロードを開始
+    await preloadImages();
+    
     questionInput.focus();
     updateImageSize(); // 画像サイズを初期化
     
