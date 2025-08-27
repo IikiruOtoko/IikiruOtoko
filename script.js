@@ -100,6 +100,9 @@ questionForm.addEventListener('submit', async (e) => {
         questionArea.classList.add('hidden');
         loadingArea.classList.remove('hidden');
         
+        // ローディング画像をimage2_1.pngに設定（前回のimage3.pngを上書き）
+        loadingImage.src = 'image2_1.png';
+        
         // APIリクエストを即座に送信（非同期で実行）
         const apiPromise = sendToAwanLLM(question);
         
@@ -136,11 +139,7 @@ let image3StartTime = 0;
 
 // 画像切り替えアニメーション
 async function performImageAnimation() {
-    // ボタン押下から1.0秒待機
-    await sleep(500);
-    
-    // image2_1.pngを表示（0.5秒待機）
-    loadingImage.src = 'image2_1.png';
+    // ボタン押下から0.5秒待機
     await sleep(500);
     
     // image2_2.pngに切り替え（0.5秒待機）
@@ -235,7 +234,21 @@ async function sendToAwanLLM(question) {
 
 // 回答を表示
 function displayAnswer(answer) {
-    answerText.textContent = answer;
+    // 語尾の「。」「.」「です」を除去
+    let processedAnswer = answer;
+    
+    // 語尾の「。」と「.」を除去
+    processedAnswer = processedAnswer.replace(/[。.]$/, '');
+    
+    // 語尾の「です」を除去
+    processedAnswer = processedAnswer.replace(/です$/, '');
+    
+    // 空文字列になった場合は元の文字列を使用
+    if (processedAnswer.trim() === '') {
+        processedAnswer = answer;
+    }
+    
+    answerText.textContent = processedAnswer;
     
     // ローディングエリアを非表示、回答エリアを表示
     loadingArea.classList.add('hidden');
