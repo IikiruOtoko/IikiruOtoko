@@ -1,0 +1,222 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: white;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+}
+
+.container {
+    max-width: 800px;
+    width: 100%;
+    background: white;
+    overflow: hidden;
+    animation: fadeIn 0.5s ease-out;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.main-content {
+    padding: 0 30px 30px;
+}
+
+.question-area, .answer-area, .loading-area {
+    transition: all 0.3s ease;
+}
+
+.hidden {
+    display: none !important;
+}
+
+.image-container {
+    text-align: center;
+    margin-bottom: 30px;
+    height: 95vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+}
+
+.main-image {
+    object-fit: contain;
+    border-radius: 10px;
+    /* サイズはJavaScriptで動的に設定 */
+}
+
+.overlay-form, .overlay-answer {
+    position: absolute;
+    bottom: 30px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(10px);
+    border-radius: 15px;
+    padding: 20px;
+    /* 幅はJavaScriptで動的に設定 */
+}
+
+.question-form {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+#question-input {
+    width: 100%;
+    padding: 15px;
+    border: 2px solid #e1e5e9;
+    border-radius: 10px;
+    font-size: 16px;
+    font-family: inherit;
+    resize: vertical;
+    min-height: 80px;
+    transition: all 0.3s ease;
+    background: white;
+}
+
+#question-input:focus {
+    outline: none;
+    border-color: #6c757d;
+    box-shadow: 0 0 0 3px rgba(108, 117, 125, 0.1);
+}
+
+.submit-btn {
+    background: rgb(212, 65, 40);
+    color: white;
+    border: none;
+    padding: 12px 25px;
+    border-radius: 25px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-transform: none;
+    letter-spacing: 1px;
+    align-self: flex-end;
+    width: fit-content;
+}
+
+.submit-btn:hover {
+    background: rgb(190, 58, 36);
+    transform: translateY(-2px);
+}
+
+.submit-btn:active {
+    transform: translateY(0);
+}
+
+.submit-btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    transform: none;
+}
+
+.loading-area {
+    text-align: center;
+}
+
+.answer-content {
+    background: transparent;
+    border-radius: 15px;
+    padding: 0;
+}
+
+.answer-content h3 {
+    color: #333;
+    margin-bottom: 10px;
+    font-size: 1.3rem;
+    font-weight: 600;
+}
+
+.answer-text {
+    color: #333;
+    line-height: 1.6;
+    font-size: 36px;
+    font-weight: bold;
+    margin-bottom: 15px;
+    white-space: pre-wrap;
+    max-height: 200px;
+    overflow-y: auto;
+    text-align: center;
+}
+
+.new-question-btn {
+    background: rgb(212, 65, 40);
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 20px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    align-self: flex-end;
+    width: fit-content;
+}
+
+.new-question-btn:hover {
+    background: rgb(190, 58, 36);
+    transform: translateY(-2px);
+}
+
+/* レスポンシブデザイン */
+@media (max-width: 768px) {
+    .container {
+        margin: 10px;
+    }
+    
+    .main-content {
+        padding: 0 20px 20px;
+    }
+    
+    .image-container {
+        height: 95vh;
+    }
+    
+    .overlay-form, .overlay-answer {
+        padding: 15px;
+        bottom: 20px;
+    }
+    
+    #question-input {
+        padding: 12px;
+        font-size: 16px;
+        min-height: 60px;
+    }
+    
+    .submit-btn {
+        padding: 10px 20px;
+        font-size: 14px;
+    }
+    
+    .answer-text {
+        max-height: 150px;
+    }
+}
+
+/* アニメーション */
+.fade-in {
+    /* アニメーション効果を削除 */
+}
+
+.slide-up {
+    /* アニメーション効果を削除 */
+} 

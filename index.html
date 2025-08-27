@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>言い切る男</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <div class="main-content">
+            <!-- 言い切り入力エリア -->
+            <div id="question-area" class="question-area">
+                <div class="image-container">
+                    <img id="display-image" src="image1.png" alt="言い切り画面" class="main-image">
+                    <div class="overlay-form">
+                        <form id="question-form" class="question-form">
+                            <textarea 
+                                id="question-input" 
+                                placeholder="言い切りたいことを入力してください..." 
+                                rows="3"
+                                required
+                            ></textarea>
+                            <button type="submit" class="submit-btn">言い切る</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 回答表示エリア -->
+            <div id="answer-area" class="answer-area hidden">
+                <div class="image-container">
+                    <img src="image3.png" alt="回答画面" class="main-image">
+                    <div class="overlay-answer">
+                        <div class="answer-content">
+                            <div id="answer-text" class="answer-text"></div>
+                            <button id="new-question-btn" class="new-question-btn">新しい言い切りをする</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- ローディングエリア -->
+            <div id="loading-area" class="loading-area hidden">
+                <div class="image-container">
+                    <img id="loading-image" src="image2_1.png" alt="処理中" class="main-image">
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- 設定ファイルを先に読み込み -->
+    <script src="config.js"></script>
+    <!-- メインスクリプト -->
+    <script src="script.js"></script>
+</body>
+</html> 

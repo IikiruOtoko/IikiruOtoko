@@ -1,0 +1,42 @@
+# APIキーや機密情報
+.env
+config.js
+secrets.json
+*.env
+
+# ログファイル
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# 依存関係
+node_modules/
+package-lock.json
+yarn.lock
+
+# ビルドファイル
+dist/
+build/
+out/
+
+# エディタ設定
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS生成ファイル
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# 一時ファイル
+*.tmp
+*.temp
+.cache/ 
