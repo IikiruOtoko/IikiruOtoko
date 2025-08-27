@@ -1,0 +1,37 @@
+name: Deploy to GitHub Pages
+
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - uses: actions/checkout@v3
+    
+    - name: Setup Node.js
+      uses: actions/setup-node@v3
+      with:
+        node-version: '18'
+    
+    - name: Create config.js from environment variables
+      run: |
+        cat > config.js << EOF
+        window.config = {
+            AWAN_API_KEY: '${{ secrets.AWAN_API_KEY }}',
+            API_URL: 'https://api.awanllm.com/v1/chat/completions',
+            MODEL: 'Meta-Llama-3-8B-Instruct',
+            MAX_TOKENS: 1024,
+            TEMPERATURE: 0.7
+        };
+        EOF
+    
+    - name: Deploy to GitHub Pages
+      uses: peaceiris/actions-gh-pages@v3
+      with:
+        github_token: ${{ secrets.GITHUB_TOKEN }}
+        publish_dir: .
+        publish_branch: gh-pages 
