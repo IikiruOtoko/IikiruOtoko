@@ -295,16 +295,6 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 });
 
-// APIキーの状態を確認
-console.log('APIキーの状態:', {
-    hasConfig: typeof window !== 'undefined' && window.config,
-    hasApiKey: typeof window !== 'undefined' && window.config && window.config.AWAN_API_KEY,
-    apiKeyValue: typeof window !== 'undefined' && window.config ? 
-        (window.config.AWAN_API_KEY ? window.config.AWAN_API_KEY.substring(0, 10) + '...' : 'undefined') : 'undefined',
-    isGitHubPages: window.location.hostname.includes('github.io'),
-    currentUrl: window.location.href
-});
-
 // GitHub Pages環境での追加チェック
 if (window.location.hostname.includes('github.io')) {
     console.log('🌐 GitHub Pages環境で実行中');
