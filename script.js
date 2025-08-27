@@ -47,6 +47,16 @@ function calculateImageSize() {
     const containerHeight = window.innerHeight * 0.95; // 95vh
     const containerWidth = window.innerWidth * 0.9; // 90% of viewport width
     
+    // スマホ（縦）の場合は横幅いっぱいにする
+    const isMobilePortrait = window.innerWidth < 768 && window.innerHeight > window.innerWidth;
+    
+    if (isMobilePortrait) {
+        // スマホ（縦）の場合は横幅いっぱい
+        const imageWidth = window.innerWidth; // 100% of viewport width
+        const imageHeight = imageWidth / IMAGE_ASPECT_RATIO;
+        return { width: imageWidth, height: imageHeight };
+    }
+    
     // 縦横比を考慮して画像サイズを計算
     let imageWidth, imageHeight;
     
