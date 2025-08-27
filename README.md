@@ -24,6 +24,7 @@ AssertManFrontEnd/
 ├── config.js           # 開発用設定ファイル（.gitignoreに含まれる）
 ├── images/             # 画像ファイル
 │   ├── image1.png      # 言い切り入力画面画像
+│   ├── image2_0.png    # 処理中画面画像0
 │   ├── image2_1.png    # 処理中画面画像1
 │   ├── image2_2.png    # 処理中画面画像2
 │   ├── image2_3.png    # 処理中画面画像3
@@ -32,6 +33,9 @@ AssertManFrontEnd/
 │   ├── image2_6.png    # 処理中画面画像6
 │   ├── image2_7.png    # 処理中画面画像7
 │   ├── image2_8.png    # 処理中画面画像8
+│   ├── image2_9.png    # 処理中画面画像9
+│   ├── image2_10.png   # 処理中画面画像10
+│   ├── image2_11.png   # 処理中画面画像11
 │   ├── image3.png      # 回答画面画像
 │   └── icon.png        # ファビコン
 ├── .gitignore          # Git除外設定

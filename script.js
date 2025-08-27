@@ -6,6 +6,7 @@ const IMAGE_HEIGHT = 1604;
 // 画像ファイルのリスト（プリロード用）
 const IMAGE_FILES = [
     'images/image1.png',
+    'images/image2_0.png',
     'images/image2_1.png',
     'images/image2_2.png',
     'images/image2_3.png',
@@ -14,6 +15,9 @@ const IMAGE_FILES = [
     'images/image2_6.png',
     'images/image2_7.png',
     'images/image2_8.png',
+    'images/image2_9.png',
+    'images/image2_10.png',
+    'images/image2_11.png',
     'images/image3.png'
 ];
 
@@ -161,9 +165,9 @@ questionForm.addEventListener('submit', async (e) => {
         questionArea.classList.add('hidden');
         loadingArea.classList.remove('hidden');
         
-        // ローディング画像をimage2_1.pngに設定（前回のimage3.pngを上書き）
+        // ローディング画像をimage2_0.pngに設定（前回のimage3.pngを上書き）
         // プリロードされた画像を使用
-        setImageFromCache(loadingImage, 'images/image2_1.png');
+        setImageFromCache(loadingImage, 'images/image2_0.png');
         
         // APIリクエストを即座に送信（非同期で実行）
         const apiPromise = sendToAwanLLM(question);
@@ -203,8 +207,8 @@ let image3StartTime = 0;
 
 // 画像切り替えアニメーション
 async function performImageAnimation() {
-    const FIRST_GAP_TIME = 500;
-    const GAP_TIME = 350;
+    const FIRST_GAP_TIME = 250;
+    const GAP_TIME = 250;
 
     // ボタン押下から0.5秒待機
     await sleep(FIRST_GAP_TIME);
@@ -235,6 +239,18 @@ async function performImageAnimation() {
     
     // image2_8.pngに切り替え（0.5秒待機）
     setImageFromCache(loadingImage, 'images/image2_8.png');
+    await sleep(GAP_TIME);
+    
+    // image2_9.pngに切り替え（0.5秒待機）
+    setImageFromCache(loadingImage, 'images/image2_9.png');
+    await sleep(GAP_TIME);
+    
+    // image2_10.pngに切り替え（0.5秒待機）
+    setImageFromCache(loadingImage, 'images/image2_10.png');
+    await sleep(GAP_TIME);
+    
+    // image2_11.pngに切り替え（0.5秒待機）
+    setImageFromCache(loadingImage, 'images/image2_11.png');
     await sleep(GAP_TIME);
     
     // image3.pngに切り替え（時刻を記録）
