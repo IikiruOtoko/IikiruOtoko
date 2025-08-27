@@ -8,7 +8,7 @@
 
 - 📝 シンプルな質問入力フォーム
 - 🎨 美しいUIデザイン（グラデーション背景、モダンなボタン）
-- 🖼️ 画像切り替えアニメーション（image1.png → image2.png → image3.png）
+- 🖼️ 画像切り替えアニメーション（image1.jpg → image2.jpg → image3.jpg）
 - 🤖 Awan LLM APIとの連携
 - 📱 レスポンシブデザイン（モバイル対応）
 - ⚡ スムーズなアニメーション効果
@@ -23,20 +23,20 @@ AssertManFrontEnd/
 ├── script.js           # JavaScript機能
 ├── config.js           # 開発用設定ファイル（.gitignoreに含まれる）
 ├── images/             # 画像ファイル
-│   ├── image1.png      # 言い切り入力画面画像
-│   ├── image2_0.png    # 処理中画面画像0
-│   ├── image2_1.png    # 処理中画面画像1
-│   ├── image2_2.png    # 処理中画面画像2
-│   ├── image2_3.png    # 処理中画面画像3
-│   ├── image2_4.png    # 処理中画面画像4
-│   ├── image2_5.png    # 処理中画面画像5
-│   ├── image2_6.png    # 処理中画面画像6
-│   ├── image2_7.png    # 処理中画面画像7
-│   ├── image2_8.png    # 処理中画面画像8
-│   ├── image2_9.png    # 処理中画面画像9
-│   ├── image2_10.png   # 処理中画面画像10
-│   ├── image2_11.png   # 処理中画面画像11
-│   ├── image3.png      # 回答画面画像
+│   ├── image1.jpg      # 言い切り入力画面画像
+│   ├── image2_0.jpg    # 処理中画面画像0
+│   ├── image2_1.jpg    # 処理中画面画像1
+│   ├── image2_2.jpg    # 処理中画面画像2
+│   ├── image2_3.jpg    # 処理中画面画像3
+│   ├── image2_4.jpg    # 処理中画面画像4
+│   ├── image2_5.jpg    # 処理中画面画像5
+│   ├── image2_6.jpg    # 処理中画面画像6
+│   ├── image2_7.jpg    # 処理中画面画像7
+│   ├── image2_8.jpg    # 処理中画面画像8
+│   ├── image2_9.jpg    # 処理中画面画像9
+│   ├── image2_10.jpg   # 処理中画面画像10
+│   ├── image2_11.jpg   # 処理中画面画像11
+│   ├── image3.jpg      # 回答画面画像
 │   └── icon.png        # ファビコン
 ├── .gitignore          # Git除外設定
 └── README.md           # このファイル
@@ -98,8 +98,8 @@ npx http-server
 1. **言い切り入力**: テキストエリアに言い切りたいことを入力
 2. **送信**: 「言い切る」ボタンをクリック
 3. **アニメーション**: 
-   - image1.png → image2.png（0.5秒）
-   - image2.png → image3.png（0.5秒）
+   - image1.jpg → image2.jpg（0.5秒）
+   - image2.jpg → image3.jpg（0.5秒）
 4. **回答表示**: Awan LLMからの回答が表示
 5. **新しい言い切り**: 「新しい言い切りをする」ボタンでリセット
 
@@ -154,7 +154,7 @@ npx http-server
 ## カスタマイズ
 
 ### 画像の変更
-- `image1.png`, `image2.png`, `image3.png` を任意の画像に置き換え
+- `image1.jpg`, `image2.jpg`, `image3.jpg` を任意の画像に置き換え
 - 同じファイル名で保存するか、HTML内のパスを変更
 
 ### スタイルの変更
