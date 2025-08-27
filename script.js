@@ -118,17 +118,19 @@ questionForm.addEventListener('submit', async (e) => {
         // APIレスポンスを待機
         const answer = await apiPromise;
         
-        // image3.png表示から1.0秒経過しているかチェック
-        const timeSinceImage3 = Date.now() - image3StartTime;
-        if (timeSinceImage3 >= 1000) {
-            // 1.0秒以上経過している場合は即座に表示
-            displayAnswer(answer);
-        } else {
-            // 1.0秒未満の場合は残り時間待機
-            const remainingTime = 1000 - timeSinceImage3;
-            await sleep(remainingTime);
-            displayAnswer(answer);
-        }
+        // // image3.png表示から1.0秒経過しているかチェック
+        // const timeSinceImage3 = Date.now() - image3StartTime;
+        // if (timeSinceImage3 >= 1000) {
+        //     // 1.0秒以上経過している場合は即座に表示
+        //     displayAnswer(answer);
+        // } else {
+        //     // 1.0秒未満の場合は残り時間待機
+        //     const remainingTime = 1000 - timeSinceImage3;
+        //     await sleep(remainingTime);
+        //     displayAnswer(answer);
+        // }
+
+        displayAnswer(answer);
         
     } catch (error) {
         console.error('エラーが発生しました:', error);
