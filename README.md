@@ -1,4 +1,6 @@
-# AssertMan - 質問回答ウェブアプリ
+# AssertMan - 言い切り男
+
+このプロジェクトは、[言い切り男](https://iikiruotoko.github.io/IikiruOtoko/)のためのコードです。
 
 シンプルで美しい質問回答ウェブアプリです。ユーザーが質問を入力すると、Awan LLM APIを使用して回答を生成し、画像切り替えアニメーション付きで表示します。
 
@@ -20,12 +22,16 @@ AssertManFrontEnd/
 ├── styles.css          # CSSスタイル
 ├── script.js           # JavaScript機能
 ├── config.js           # 開発用設定ファイル（.gitignoreに含まれる）
-├── image1.png          # 質問入力画面画像
+├── image1.png          # 言い切り入力画面画像
 ├── image2.png          # 処理中画面画像
 ├── image3.png          # 回答画面画像
 ├── .gitignore          # Git除外設定
 └── README.md           # このファイル
 ```
+
+## デモサイト
+
+- **本番環境**: [言い切り男](https://iikiruotoko.github.io/IikiruOtoko/)
 
 ## セットアップ
 
@@ -35,9 +41,18 @@ AssertManFrontEnd/
 2. アカウントを作成・ログイン
 3. APIキーを取得
 
-### 2. APIキーの設定（セキュアな方法）
+### 2. APIキーの設定
 
-#### 開発環境の場合
+#### GitHub Pages（本番環境）の場合
+1. GitHubリポジトリのSettings → Secrets and variables → Actions
+2. 「New repository secret」をクリック
+3. Name: `AWAN_API_KEY`
+4. Value: 実際のAPIキーを入力
+5. 「Add secret」をクリック
+
+これで、GitHub Actionsが自動的にAPIキーを`config.js`に埋め込んでデプロイします。
+
+#### ローカル開発の場合
 1. `config.js` ファイルを開く
 2. `AWAN_API_KEY` を実際のAPIキーに設定：
 
@@ -46,14 +61,6 @@ window.config = {
     AWAN_API_KEY: 'sk-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx', // 実際のAPIキー
     // その他の設定...
 };
-```
-
-#### 本番環境の場合
-環境変数を使用してAPIキーを設定：
-
-```bash
-# 環境変数として設定
-export AWAN_API_KEY="sk-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
 ```
 
 ### 3. ローカルでの実行
@@ -75,13 +82,13 @@ npx http-server
 
 ## 使用方法
 
-1. **質問入力**: テキストエリアに質問を入力
+1. **言い切り入力**: テキストエリアに言い切りたいことを入力
 2. **送信**: 「言い切る」ボタンをクリック
 3. **アニメーション**: 
    - image1.png → image2.png（0.5秒）
    - image2.png → image3.png（0.5秒）
 4. **回答表示**: Awan LLMからの回答が表示
-5. **新しい質問**: 「新しい質問をする」ボタンでリセット
+5. **新しい言い切り**: 「新しい言い切りをする」ボタンでリセット
 
 ## ホスティング
 
@@ -100,10 +107,20 @@ npx http-server
 4. 自動デプロイ
 
 ### GitHub Pages
-1. リポジトリのSettings → Pages
-2. Sourceを「Deploy from a branch」に設定
-3. ブランチを選択してデプロイ
-4. **注意**: GitHub Pagesでは環境変数が使用できないため、別の方法が必要
+1. **APIキーの設定**:
+   - GitHubリポジトリのSettings → Secrets and variables → Actions
+   - 「New repository secret」をクリック
+   - Name: `AWAN_API_KEY`、Value: 実際のAPIキーを入力
+   - 「Add secret」をクリック
+
+2. **デプロイ設定**:
+   - リポジトリのSettings → Pages
+   - Sourceを「GitHub Actions」に設定
+
+3. **自動デプロイ**:
+   - プッシュするたびに、GitHub Actionsが自動的にAPIキーを埋め込んでデプロイします
+
+**注意**: `config.js`は`.gitignore`に含まれており、GitHub Actionsで自動生成されます。
 
 ## セキュリティ
 
@@ -151,6 +168,13 @@ npx http-server
 - モック回答が表示されます
 - コンソールに警告メッセージが表示されます
 - `config.js` でAPIキーを設定してください
+- GitHub Pagesの場合、`config.js` ファイルが正しくデプロイされているか確認してください
+
+### GitHub PagesでAPIキーが認識されない場合
+1. GitHub Repository Secretsに`AWAN_API_KEY`が正しく設定されているか確認
+2. GitHub Actionsが正常に実行されているか確認（Actionsタブで確認）
+3. GitHub PagesのSourceが「GitHub Actions」に設定されているか確認
+4. ブラウザのコンソールで設定ファイルの読み込み状況を確認
 
 ### 画像が表示されない場合
 - 画像ファイルが正しいパスに配置されているか確認

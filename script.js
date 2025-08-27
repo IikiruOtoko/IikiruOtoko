@@ -20,20 +20,16 @@ const AWAN_API_URL = 'https://api.awanllm.com/v1/chat/completions';
 // ローカル開発時は .env ファイルから読み込み
 let AWAN_API_KEY = null;
 
-// 環境変数からAPIキーを取得する関数
+// APIキーを取得する関数
 function getApiKey() {
-    // 本番環境では環境変数から取得
-    if (typeof process !== 'undefined' && process.env) {
-        return process.env.AWAN_API_KEY;
+    // 設定ファイルから読み込み（存在する場合）
+    if (typeof window !== 'undefined' && window.config && window.config.AWAN_API_KEY) {
+        return window.config.AWAN_API_KEY;
     }
     
-    // ローカル開発時は .env ファイルから読み込みを試行
-    // 注意: ブラウザでは直接 .env ファイルを読み込めないため、
-    // 実際の実装ではサーバーサイドで環境変数を設定する必要があります
-    
-    // 開発用の設定ファイルから読み込み（存在する場合）
-    if (typeof window !== 'undefined' && window.config) {
-        return window.config.AWAN_API_KEY;
+    // 環境変数から取得（Node.js環境の場合）
+    if (typeof process !== 'undefined' && process.env && process.env.AWAN_API_KEY) {
+        return process.env.AWAN_API_KEY;
     }
     
     return null;
@@ -209,7 +205,7 @@ async function sendToAwanLLM(question) {
         temperature: 0.7,
         top_p: 0.9,
         top_k: 40,
-        max_tokens: 8,
+        MAX_TOKENS: 16,
         stream: false
     };
     
@@ -299,9 +295,29 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 });
 
+// APIキーの状態を確認
+console.log('APIキーの状態:', {
+    hasConfig: typeof window !== 'undefined' && window.config,
+    hasApiKey: typeof window !== 'undefined' && window.config && window.config.AWAN_API_KEY,
+    apiKeyValue: typeof window !== 'undefined' && window.config ? 
+        (window.config.AWAN_API_KEY ? window.config.AWAN_API_KEY.substring(0, 10) + '...' : 'undefined') : 'undefined',
+    isGitHubPages: window.location.hostname.includes('github.io'),
+    currentUrl: window.location.href
+});
+
+// GitHub Pages環境での追加チェック
+if (window.location.hostname.includes('github.io')) {
+    console.log('🌐 GitHub Pages環境で実行中');
+    console.log('📝 APIキーが設定されていない場合:');
+    console.log('1. GitHubリポジトリのSettings → Secrets and variables → Actions');
+    console.log('2. 「New repository secret」でAWAN_API_KEYを設定');
+    console.log('3. GitHub Actionsが自動的にconfig.jsを生成します');
+}
+
 // 開発用のモック回答（APIキーが設定されていない場合）
-if (AWAN_API_KEY === null) { // 環境変数から取得できなかった場合
+if (AWAN_API_KEY === null) { // APIキーが取得できなかった場合
     console.warn('Awan LLM APIキーが設定されていません。モック回答を使用します。');
+    console.warn('config.jsファイルが正しく読み込まれているか確認してください。');
     
     // モック回答用の関数を上書き
     async function sendToAwanLLM(question) {

@@ -54,5 +54,14 @@
     <script src="config.js"></script>
     <!-- メインスクリプト -->
     <script src="script.js"></script>
+    <!-- 設定ファイルの読み込み確認 -->
+    <script>
+        console.log('config.js読み込み確認:', {
+            configLoaded: typeof window.config !== 'undefined',
+            apiKeyExists: typeof window.config !== 'undefined' && window.config.AWAN_API_KEY,
+            apiKeyValue: typeof window.config !== 'undefined' && window.config.AWAN_API_KEY ? 
+                window.config.AWAN_API_KEY.substring(0, 10) + '...' : 'undefined'
+        });
+    </script>
 </body>
 </html> 
