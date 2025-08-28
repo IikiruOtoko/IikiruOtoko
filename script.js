@@ -5,22 +5,22 @@ const IMAGE_HEIGHT = 1604;
 
 // 画像ファイルのリスト（プリロード用）
 const IMAGE_FILES = [
-    'images/image1.jpg',
-    'images/image2_0.jpg',
-    'images/image2_1.jpg',
-    'images/image2_2.jpg',
-    'images/image2_3.jpg',
-    'images/image2_4.jpg',
-    'images/image2_5.jpg',
-    'images/image2_6.jpg',
-    'images/image2_7.jpg',
-    'images/image2_8.jpg',
-    'images/image2_9.jpg',
-    'images/image2_10.jpg',
-    'images/image2_11.jpg',
-    'images/image2_12.jpg',
-    'images/image2_13.jpg',
-    'images/image3.jpg'
+    'images/image1.webp',
+    'images/image2_0.webp',
+    'images/image2_1.webp',
+    'images/image2_2.webp',
+    'images/image2_3.webp',
+    'images/image2_4.webp',
+    'images/image2_5.webp',
+    'images/image2_6.webp',
+    'images/image2_7.webp',
+    'images/image2_8.webp',
+    'images/image2_9.webp',
+    'images/image2_10.webp',
+    'images/image2_11.webp',
+    'images/image2_12.webp',
+    'images/image2_13.webp',
+    'images/image3.webp'
 ];
 
 // プリロードされた画像のキャッシュ
@@ -167,9 +167,9 @@ questionForm.addEventListener('submit', async (e) => {
         questionArea.classList.add('hidden');
         loadingArea.classList.remove('hidden');
         
-        // ローディング画像をimage2_0.jpgに設定（前回のimage3.jpgを上書き）
+        // ローディング画像をimage2_0.webpに設定（前回のimage3.webpを上書き）
         // プリロードされた画像を使用
-        setImageFromCache(loadingImage, 'images/image2_0.jpg');
+        setImageFromCache(loadingImage, 'images/image2_0.webp');
         
         // APIリクエストを即座に送信（非同期で実行）
         const apiPromise = sendToAwanLLM(question);
@@ -180,7 +180,7 @@ questionForm.addEventListener('submit', async (e) => {
         // APIレスポンスを待機
         const answer = await apiPromise;
         
-        // // image3.jpg表示から1.0秒経過しているかチェック
+        // // image3.webp表示から1.0秒経過しているかチェック
         // const timeSinceImage3 = Date.now() - image3StartTime;
         // if (timeSinceImage3 >= 1000) {
         //     // 1.0秒以上経過している場合は即座に表示
@@ -204,7 +204,7 @@ questionForm.addEventListener('submit', async (e) => {
     }
 });
 
-// image3.jpg表示開始時刻を記録する変数
+// image3.webp表示開始時刻を記録する変数
 let image3StartTime = 0;
 
 // 画像切り替えアニメーション
@@ -215,56 +215,56 @@ async function performImageAnimation() {
     // ボタン押下から0.5秒待機
     await sleep(FIRST_GAP_TIME);
     
-    // image2_2.jpgに切り替え（0.5秒待機）
-    setImageFromCache(loadingImage, 'images/image2_2.jpg');
+    // image2_2.webpに切り替え（0.5秒待機）
+    setImageFromCache(loadingImage, 'images/image2_2.webp');
     await sleep(GAP_TIME);
     
-    // image2_3.jpgに切り替え（0.5秒待機）
-    setImageFromCache(loadingImage, 'images/image2_3.jpg');
+    // image2_3.webpに切り替え（0.5秒待機）
+    setImageFromCache(loadingImage, 'images/image2_3.webp');
     await sleep(GAP_TIME);
     
-    // image2_4.jpgに切り替え（0.5秒待機）
-    setImageFromCache(loadingImage, 'images/image2_4.jpg');
+    // image2_4.webpに切り替え（0.5秒待機）
+    setImageFromCache(loadingImage, 'images/image2_4.webp');
     await sleep(GAP_TIME);
     
-    // image2_5.jpgに切り替え（0.5秒待機）
-    setImageFromCache(loadingImage, 'images/image2_5.jpg');
+    // image2_5.webpに切り替え（0.5秒待機）
+    setImageFromCache(loadingImage, 'images/image2_5.webp');
     await sleep(GAP_TIME);
     
-    // image2_6.jpgに切り替え（0.5秒待機）
-    setImageFromCache(loadingImage, 'images/image2_6.jpg');
+    // image2_6.webpに切り替え（0.5秒待機）
+    setImageFromCache(loadingImage, 'images/image2_6.webp');
     await sleep(GAP_TIME);
 
-    // image2_7.jpgに切り替え（0.5秒待機）
-    setImageFromCache(loadingImage, 'images/image2_7.jpg');
+    // image2_7.webpに切り替え（0.5秒待機）
+    setImageFromCache(loadingImage, 'images/image2_7.webp');
     await sleep(GAP_TIME);
     
-    // image2_8.jpgに切り替え（0.5秒待機）
-    setImageFromCache(loadingImage, 'images/image2_8.jpg');
+    // image2_8.webpに切り替え（0.5秒待機）
+    setImageFromCache(loadingImage, 'images/image2_8.webp');
     await sleep(GAP_TIME);
     
-    // image2_9.jpgに切り替え（0.5秒待機）
-    setImageFromCache(loadingImage, 'images/image2_9.jpg');
+    // image2_9.webpに切り替え（0.5秒待機）
+    setImageFromCache(loadingImage, 'images/image2_9.webp');
     await sleep(GAP_TIME);
     
-    // image2_10.jpgに切り替え（0.5秒待機）
-    setImageFromCache(loadingImage, 'images/image2_10.jpg');
+    // image2_10.webpに切り替え（0.5秒待機）
+    setImageFromCache(loadingImage, 'images/image2_10.webp');
     await sleep(GAP_TIME);
     
-    // image2_11.jpgに切り替え（0.5秒待機）
-    setImageFromCache(loadingImage, 'images/image2_11.jpg');
+    // image2_11.webpに切り替え（0.5秒待機）
+    setImageFromCache(loadingImage, 'images/image2_11.webp');
     await sleep(GAP_TIME);
 
-    // image2_12.jpgに切り替え（0.5秒待機）
-    setImageFromCache(loadingImage, 'images/image2_12.jpg');
+    // image2_12.webpに切り替え（0.5秒待機）
+    setImageFromCache(loadingImage, 'images/image2_12.webp');
     await sleep(GAP_TIME);
 
-    // image2_13.jpgに切り替え（0.5秒待機）
-    setImageFromCache(loadingImage, 'images/image2_13.jpg');
+    // image2_13.webpに切り替え（0.5秒待機）
+    setImageFromCache(loadingImage, 'images/image2_13.webp');
     await sleep(GAP_TIME);
     
-    // image3.jpgに切り替え（時刻を記録）
-    setImageFromCache(loadingImage, 'images/image3.jpg');
+    // image3.webpに切り替え（時刻を記録）
+    setImageFromCache(loadingImage, 'images/image3.webp');
     image3StartTime = Date.now();
     // await sleep(GAP_TIME);
 }
