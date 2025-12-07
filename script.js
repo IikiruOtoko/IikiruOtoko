@@ -36,30 +36,8 @@ const answerText = document.getElementById('answer-text');
 const newQuestionBtn = document.getElementById('new-question-btn');
 const loadingImage = document.getElementById('loading-image');
 
-// Awan LLM API設定
-const AWAN_API_URL = 'https://api.awanllm.com/v1/chat/completions';
-
-// 環境変数からAPIキーを取得（本番環境用）
-// ローカル開発時は .env ファイルから読み込み
-let AWAN_API_KEY = null;
-
-// APIキーを取得する関数
-function getApiKey() {
-    // 設定ファイルから読み込み（存在する場合）
-    if (typeof window !== 'undefined' && window.config && window.config.AWAN_API_KEY) {
-        return window.config.AWAN_API_KEY;
-    }
-    
-    // 環境変数から取得（Node.js環境の場合）
-    if (typeof process !== 'undefined' && process.env && process.env.AWAN_API_KEY) {
-        return process.env.AWAN_API_KEY;
-    }
-    
-    return null;
-}
-
-// APIキーを初期化
-AWAN_API_KEY = getApiKey();
+// API設定
+const API_URL = 'https://iikiruotokoapi.onrender.com/chat';
 
 // プリロードされた画像を使用して画像を設定する関数
 function setImageFromCache(imgElement, imagePath) {
@@ -172,7 +150,7 @@ questionForm.addEventListener('submit', async (e) => {
         setImageFromCache(loadingImage, 'images/image2_0.webp');
         
         // APIリクエストを即座に送信（非同期で実行）
-        const apiPromise = sendToAwanLLM(question);
+        const apiPromise = sendToAPI(question);
         
         // 画像切り替えアニメーションを開始
         await performImageAnimation();
@@ -274,35 +252,18 @@ function sleep(ms) {
     return new Promise(resolve => setTimeout(resolve, ms));
 }
 
-// Awan LLM APIにリクエスト送信
-async function sendToAwanLLM(question) {
+// APIにリクエスト送信
+async function sendToAPI(question) {
     const requestBody = {
-        model: "Meta-Llama-3-8B-Instruct", // Awan LLMで利用可能なモデル
-        messages: [
-            {
-                role: "system",
-                content: "質問に対して結論を**端的に**返して。**間違っていても良いので、必ず結論を出して**。**分からない質問に対しても、曖昧な回答・無回答は絶対に禁止**。例えば「分からない」「答えられない」「言えない」などの回答は**禁止**。**長い説明も禁止**。**結論以外の文字列の出力は禁止**。「です」「ます」「。」「.」などの敬語や句読点は禁止。例：「男女の友情は成立するかしないか？」→「する」「卵が先か？鶏が先か？」→「卵」「10年後の今日の天気は？」→「晴れ」"
-            },
-            {
-                role: "user",
-                content: question
-            }
-        ],
-        repetition_penalty: 1.1,
-        temperature: 0.7,
-        top_p: 0.9,
-        top_k: 40,
-        MAX_TOKENS: 16,
-        stream: false
+        message: question
     };
     
     console.log('APIリクエスト送信中...', requestBody);
     
-    const response = await fetch(AWAN_API_URL, {
+    const response = await fetch(API_URL, {
         method: 'POST',
         headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${AWAN_API_KEY}`
+            'Content-Type': 'application/json'
         },
         body: JSON.stringify(requestBody)
     });
@@ -318,8 +279,8 @@ async function sendToAwanLLM(question) {
     const data = await response.json();
     console.log('APIレスポンスデータ:', data);
     
-    if (data.choices && data.choices[0] && data.choices[0].message) {
-        return data.choices[0].message.content;
+    if (data.answer) {
+        return data.answer;
     } else {
         throw new Error('Invalid response format from API');
     }
@@ -384,35 +345,3 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
     });
 });
-
-// GitHub Pages環境での追加チェック
-if (window.location.hostname.includes('github.io')) {
-    console.log('🌐 GitHub Pages環境で実行中');
-    console.log('📝 APIキーが設定されていない場合:');
-    console.log('1. GitHubリポジトリのSettings → Secrets and variables → Actions');
-    console.log('2. 「New repository secret」でAWAN_API_KEYを設定');
-    console.log('3. GitHub Actionsが自動的にconfig.jsを生成します');
-}
-
-// 開発用のモック回答（APIキーが設定されていない場合）
-if (AWAN_API_KEY === null) { // APIキーが取得できなかった場合
-    console.warn('Awan LLM APIキーが設定されていません。モック回答を使用します。');
-    console.warn('config.jsファイルが正しく読み込まれているか確認してください。');
-    
-    // モック回答用の関数を上書き
-    async function sendToAwanLLM(question) {
-        // 実際のAPI呼び出しをシミュレート
-        await sleep(1000);
-        
-        const mockAnswers = [
-            "これは素晴らしい質問ですね。私の見解では、この問題について深く考える必要があります。",
-            "興味深い視点です。この質問に対する答えは、状況によって異なる場合があります。",
-            "確かに、この問題は複雑で、簡単に答えられるものではありません。",
-            "あなたの質問は非常に重要で、多くの人が同じ疑問を持っていると思います。",
-            "この質問について、私は以下のように考えます：まず、問題の本質を理解することが重要です。"
-        ];
-        
-        const randomAnswer = mockAnswers[Math.floor(Math.random() * mockAnswers.length)];
-        return randomAnswer + "\n\n（これはモック回答です。実際のAPIキーを設定すると、Awan LLMからの回答が表示されます。）";
-    }
-} 

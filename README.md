@@ -2,26 +2,24 @@
 
 このプロジェクトは、[言い切り男](https://iikiruotoko.github.io/IikiruOtoko/)のためのコードです。
 
-シンプルで美しい質問回答ウェブアプリです。ユーザーが質問を入力すると、Awan LLM APIを使用して回答を生成し、画像切り替えアニメーション付きで表示します。
+シンプルで美しい質問回答ウェブアプリです。ユーザーが質問を入力すると、バックエンドAPIを使用して回答を生成し、画像切り替えアニメーション付きで表示します。
 
 ## 機能
 
 - 📝 シンプルな質問入力フォーム
 - 🎨 美しいUIデザイン（グラデーション背景、モダンなボタン）
-- 🖼️ 画像切り替えアニメーション（image1.webp → image2.webp → image3.webp）
-- 🤖 Awan LLM APIとの連携
+- 🖼️ 画像切り替えアニメーション（image1.webp → image2_*.webp → image3.webp）
+- 🤖 バックエンドAPIとの連携
 - 📱 レスポンシブデザイン（モバイル対応）
 - ⚡ スムーズなアニメーション効果
-- 🔒 セキュアなAPIキー管理
 
 ## ファイル構成
 
 ```
-AssertManFrontEnd/
+IikiruOtoko/
 ├── index.html          # メインHTMLファイル
 ├── styles.css          # CSSスタイル
 ├── script.js           # JavaScript機能
-├── config.js           # 開発用設定ファイル（.gitignoreに含まれる）
 ├── images/             # 画像ファイル
 │   ├── image1.webp      # 言い切り入力画面画像
 │   ├── image2_0.webp    # 処理中画面画像0
@@ -36,9 +34,12 @@ AssertManFrontEnd/
 │   ├── image2_9.webp    # 処理中画面画像9
 │   ├── image2_10.webp   # 処理中画面画像10
 │   ├── image2_11.webp   # 処理中画面画像11
+│   ├── image2_12.webp   # 処理中画面画像12
+│   ├── image2_13.webp   # 処理中画面画像13
 │   ├── image3.webp      # 回答画面画像
 │   └── icon.png        # ファビコン
-├── .gitignore          # Git除外設定
+├── robots.txt          # 検索エンジン向け設定
+├── sitemap.xml         # サイトマップ
 └── README.md           # このファイル
 ```
 
@@ -48,35 +49,7 @@ AssertManFrontEnd/
 
 ## セットアップ
 
-### 1. Awan LLM APIキーの取得
-
-1. [Awan LLM](https://awanllm.com/) にアクセス
-2. アカウントを作成・ログイン
-3. APIキーを取得
-
-### 2. APIキーの設定
-
-#### GitHub Pages（本番環境）の場合
-1. GitHubリポジトリのSettings → Secrets and variables → Actions
-2. 「New repository secret」をクリック
-3. Name: `AWAN_API_KEY`
-4. Value: 実際のAPIキーを入力
-5. 「Add secret」をクリック
-
-これで、GitHub Actionsが自動的にAPIキーを`config.js`に埋め込んでデプロイします。
-
-#### ローカル開発の場合
-1. `config.js` ファイルを開く
-2. `AWAN_API_KEY` を実際のAPIキーに設定：
-
-```javascript
-window.config = {
-    AWAN_API_KEY: 'sk-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx', // 実際のAPIキー
-    // その他の設定...
-};
-```
-
-### 3. ローカルでの実行
+### ローカルでの実行
 
 1. すべてのファイルを同じディレクトリに配置
 2. `index.html` をブラウザで開く
@@ -96,60 +69,46 @@ npx http-server
 ## 使用方法
 
 1. **言い切り入力**: テキストエリアに言い切りたいことを入力
-2. **送信**: 「言い切る」ボタンをクリック
+2. **送信**: 「言い切る」ボタンをクリック（または Cmd/Ctrl + Enter）
 3. **アニメーション**: 
-   - image1.webp → image2.webp（0.5秒）
-   - image2.webp → image3.webp（0.5秒）
-4. **回答表示**: Awan LLMからの回答が表示
+   - image1.webp → image2_0.webp → image2_2.webp → ... → image2_13.webp → image3.webp
+   - 各画像が0.25秒間隔で切り替わります
+4. **回答表示**: バックエンドAPIからの回答が表示されます
 5. **新しい言い切り**: 「新しい言い切りをする」ボタンでリセット
 
 ## ホスティング
 
 このアプリは静的ファイルのみで構成されているため、以下のサービスで簡単にホスティングできます：
 
+### GitHub Pages
+1. リポジトリのSettings → Pages
+2. Sourceを「Deploy from a branch」に設定
+3. ブランチとディレクトリを選択
+4. 自動デプロイ
+
 ### Netlify
 1. GitHubにリポジトリをプッシュ
 2. Netlifyでリポジトリを接続
-3. 環境変数で `AWAN_API_KEY` を設定
-4. 自動デプロイ
+3. 自動デプロイ
 
 ### Vercel
 1. GitHubにリポジトリをプッシュ
 2. Vercelでリポジトリを接続
-3. 環境変数で `AWAN_API_KEY` を設定
-4. 自動デプロイ
+3. 自動デプロイ
 
-### GitHub Pages
-1. **APIキーの設定**:
-   - GitHubリポジトリのSettings → Secrets and variables → Actions
-   - 「New repository secret」をクリック
-   - Name: `AWAN_API_KEY`、Value: 実際のAPIキーを入力
-   - 「Add secret」をクリック
+**注意**: このアプリはバックエンドAPI（`https://iikiruotokoapi.onrender.com/chat`）を使用します。APIキーの設定は不要です。
 
-2. **デプロイ設定**:
-   - リポジトリのSettings → Pages
-   - Sourceを「GitHub Actions」に設定
+## アーキテクチャ
 
-3. **自動デプロイ**:
-   - プッシュするたびに、GitHub Actionsが自動的にAPIキーを埋め込んでデプロイします
+このアプリは以下の構成で動作します：
 
-**注意**: `config.js`は`.gitignore`に含まれており、GitHub Actionsで自動生成されます。
+- **フロントエンド**: 静的HTML/CSS/JavaScript（このリポジトリ）
+- **バックエンドAPI**: `https://iikiruotokoapi.onrender.com/chat`
+  - FastAPIで実装されたREST API
+  - OpenAI GPT-4.1-miniを使用して回答を生成
+  - 同じ質問に対する回答をキャッシュして高速化
 
-## セキュリティ
-
-### APIキーの安全な管理
-
-- ✅ `config.js` は `.gitignore` に含まれているため、Gitにコミットされません
-- ✅ 本番環境では環境変数を使用
-- ✅ APIキーはフロントエンドのJavaScriptに直接記述されません
-- ⚠️ 開発時のみ `config.js` にAPIキーを記述
-
-### 推奨事項
-
-1. **開発時**: `config.js` にAPIキーを設定（既にGit除外済み）
-2. **本番環境**: 環境変数を使用
-3. **APIキーの共有**: 絶対にGitリポジトリにコミットしない
-4. **定期的な更新**: APIキーを定期的に更新する
+APIキーなどの機密情報はバックエンドで管理されているため、フロントエンド側での設定は不要です。
 
 ## カスタマイズ
 
@@ -161,42 +120,32 @@ npx http-server
 - `styles.css` を編集して色やレイアウトをカスタマイズ
 - グラデーション、フォント、サイズなどを調整可能
 
-### API設定の変更
-- `config.js` でモデル名、トークン数、温度などを調整
+### APIエンドポイントの変更
+- `script.js` の `API_URL` 定数を変更することで、別のAPIエンドポイントを使用できます
 - 現在の設定：
-  - モデル: `meta-llama/Llama-2-70b-chat-hf`
-  - 最大トークン: 1000
-  - 温度: 0.7
+  - API URL: `https://iikiruotokoapi.onrender.com/chat`
 
 ## 注意事項
 
-- APIキーは公開リポジトリにコミットしないでください
-- 本番環境では環境変数を使用することを推奨
-- Awan LLM APIの利用制限と料金を確認してください
-- `config.js` ファイルはGit管理から除外されています
+- バックエンドAPIが正常に動作していることを確認してください
+- APIエンドポイントが変更された場合は、`script.js`の`API_URL`を更新してください
 
 ## トラブルシューティング
 
-### APIキーが設定されていない場合
-- モック回答が表示されます
-- コンソールに警告メッセージが表示されます
-- `config.js` でAPIキーを設定してください
-- GitHub Pagesの場合、`config.js` ファイルが正しくデプロイされているか確認してください
-
-### GitHub PagesでAPIキーが認識されない場合
-1. GitHub Repository Secretsに`AWAN_API_KEY`が正しく設定されているか確認
-2. GitHub Actionsが正常に実行されているか確認（Actionsタブで確認）
-3. GitHub PagesのSourceが「GitHub Actions」に設定されているか確認
-4. ブラウザのコンソールで設定ファイルの読み込み状況を確認
+### APIエラーが発生する場合
+1. ブラウザのコンソール（F12）でエラーメッセージを確認
+2. ネットワーク接続を確認
+3. バックエンドAPI（`https://iikiruotokoapi.onrender.com/chat`）が正常に動作しているか確認
+4. CORSエラーが発生している場合は、バックエンドAPIの設定を確認
 
 ### 画像が表示されない場合
 - 画像ファイルが正しいパスに配置されているか確認
 - ファイル名の大文字小文字を確認
+- ブラウザのコンソールで画像の読み込みエラーを確認
 
-### APIエラーが発生する場合
-- APIキーが正しく設定されているか確認
-- ネットワーク接続を確認
-- Awan LLM APIのステータスを確認
+### 回答が表示されない場合
+- APIレスポンスの形式が正しいか確認（`{ answer: "..." }`形式である必要があります）
+- ブラウザのコンソールでAPIレスポンスを確認
 
 ## ライセンス
 
