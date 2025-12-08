@@ -1,7 +1,3 @@
-# 設定ファイル（APIキーを含むため）
-# config.js は GitHub Actions で自動生成されるため除外
-config.js
-
 # 環境変数ファイル
 .env
 .env.local
