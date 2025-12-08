@@ -50,7 +50,6 @@ function setImageFromCache(imgElement, imagePath) {
 
 // 画像をプリロードする関数
 async function preloadImages() {
-    console.log('🖼️ 画像のプリロードを開始...');
     let loadedCount = 0;
     const loadPromises = IMAGE_FILES.map(imagePath => {
         return new Promise((resolve, reject) => {
@@ -58,11 +57,9 @@ async function preloadImages() {
             img.onload = () => {
                 imageCache.set(imagePath, img);
                 loadedCount++;
-                console.log(`✅ ${imagePath} をプリロード完了 (${loadedCount}/${IMAGE_FILES.length})`);
                 resolve(imagePath);
             };
             img.onerror = () => {
-                console.error(`❌ ${imagePath} のプリロードに失敗`);
                 reject(new Error(`Failed to load ${imagePath}`));
             };
             img.src = imagePath;
@@ -71,9 +68,8 @@ async function preloadImages() {
     
     try {
         await Promise.all(loadPromises);
-        console.log('🎉 すべての画像のプリロードが完了しました！');
     } catch (error) {
-        console.error('画像のプリロード中にエラーが発生:', error);
+        console.log(error);
     }
 }
 
@@ -258,8 +254,6 @@ async function sendToAPI(question) {
         message: question
     };
     
-    console.log('APIリクエスト送信中...', requestBody);
-    
     const response = await fetch(API_URL, {
         method: 'POST',
         headers: {
@@ -268,16 +262,13 @@ async function sendToAPI(question) {
         body: JSON.stringify(requestBody)
     });
     
-    console.log('APIレスポンス:', response.status, response.statusText);
-    
     if (!response.ok) {
         const errorText = await response.text();
-        console.error('APIエラー詳細:', errorText);
+        console.log(errorText);
         throw new Error(`API request failed: ${response.status} - ${response.statusText}`);
     }
     
     const data = await response.json();
-    console.log('APIレスポンスデータ:', data);
     
     if (data.answer) {
         return data.answer;
@@ -329,8 +320,21 @@ newQuestionBtn.addEventListener('click', () => {
     questionInput.focus();
 });
 
+// コールドスタート対策: APIを叩いてサーバーを起動状態に保つ
+async function warmupAPI() {
+    try {
+        const response = await fetch('https://iikiruotokoapi.onrender.com/', {
+            method: 'GET'
+        });
+    } catch (error) {
+        console.log(error);
+    }
+}
+
 // ページ読み込み時の初期化
 document.addEventListener('DOMContentLoaded', async () => {
+    warmupAPI();
+    
     // 画像のプリロードを開始
     await preloadImages();
     
