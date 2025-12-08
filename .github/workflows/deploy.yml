@@ -26,25 +26,6 @@ jobs:
         with:
           node-version: '18'
           
-      - name: Create config.js with API key
-        run: |
-          cat > config.js << EOF
-          window.config = {
-              AWAN_API_KEY: '${{ secrets.AWAN_API_KEY }}',
-              API_URL: 'https://api.awanllm.com/v1/chat/completions',
-              MODEL: 'Meta-Llama-3-8B-Instruct',
-              MAX_TOKENS: 16,
-              TEMPERATURE: 0.7
-          };
-          
-          if (!window.config.AWAN_API_KEY) {
-              console.warn('⚠️ GitHub Repository SecretsにAWAN_API_KEYが設定されていません。');
-              console.warn('リポジトリのSettings → Secrets and variables → Actionsで設定してください。');
-          } else {
-              console.log('✅ APIキーが正しく設定されています。');
-          }
-          EOF
-          
       - name: Setup Pages
         uses: actions/configure-pages@v4
         
