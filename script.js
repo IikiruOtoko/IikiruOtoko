@@ -37,7 +37,8 @@ const newQuestionBtn = document.getElementById('new-question-btn');
 const loadingImage = document.getElementById('loading-image');
 
 // API設定
-const API_URL = 'https://iikiruotokoapi.onrender.com/chat';
+const API_URL_BASE = 'https://iikiruotokoapi-1.onrender.com/';
+const API_URL = API_URL_BASE + 'chat';
 
 // プリロードされた画像を使用して画像を設定する関数
 function setImageFromCache(imgElement, imagePath) {
@@ -323,7 +324,7 @@ newQuestionBtn.addEventListener('click', () => {
 // コールドスタート対策: APIを叩いてサーバーを起動状態に保つ
 async function warmupAPI() {
     try {
-        const response = await fetch('https://iikiruotokoapi.onrender.com/', {
+        const response = await fetch(API_URL_BASE, {
             method: 'GET'
         });
     } catch (error) {

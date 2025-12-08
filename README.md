@@ -96,14 +96,14 @@ npx http-server
 2. Vercelでリポジトリを接続
 3. 自動デプロイ
 
-**注意**: このアプリはバックエンドAPI（`https://iikiruotokoapi.onrender.com/chat`）を使用します。APIキーの設定は不要です。
+**注意**: このアプリはバックエンドAPI（`https://iikiruotokoapi-1.onrender.com/chat`）を使用します。APIキーの設定は不要です。
 
 ## アーキテクチャ
 
 このアプリは以下の構成で動作します：
 
 - **フロントエンド**: 静的HTML/CSS/JavaScript（このリポジトリ）
-- **バックエンドAPI**: `https://iikiruotokoapi.onrender.com/chat`
+- **バックエンドAPI**: `https://iikiruotokoapi-1.onrender.com/chat`
   - FastAPIで実装されたREST API
   - OpenAI GPT-4.1-miniを使用して回答を生成
   - 同じ質問に対する回答をキャッシュして高速化
@@ -123,7 +123,7 @@ APIキーなどの機密情報はバックエンドで管理されているた�
 ### APIエンドポイントの変更
 - `script.js` の `API_URL` 定数を変更することで、別のAPIエンドポイントを使用できます
 - 現在の設定：
-  - API URL: `https://iikiruotokoapi.onrender.com/chat`
+  - API URL: `https://iikiruotokoapi-1.onrender.com/chat`
 
 ## 注意事項
 
@@ -135,7 +135,7 @@ APIキーなどの機密情報はバックエンドで管理されているた�
 ### APIエラーが発生する場合
 1. ブラウザのコンソール（F12）でエラーメッセージを確認
 2. ネットワーク接続を確認
-3. バックエンドAPI（`https://iikiruotokoapi.onrender.com/chat`）が正常に動作しているか確認
+3. バックエンドAPI（`https://iikiruotokoapi-1.onrender.com/chat`）が正常に動作しているか確認
 4. CORSエラーが発生している場合は、バックエンドAPIの設定を確認
 
 ### 画像が表示されない場合
