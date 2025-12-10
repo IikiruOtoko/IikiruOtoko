@@ -20,8 +20,45 @@ const IMAGE_FILES = [
     'images/image2_11.webp',
     'images/image2_12.webp',
     'images/image2_13.webp',
+    'images/image2_14.webp',
+    'images/image2_15.webp',
+    'images/image2_16.webp',
+    'images/image2_17.webp',
+    'images/image2_18.webp',
+    'images/image2_19.webp',
+    'images/image2_20.webp',
+    'images/image2_21.webp',
+    'images/image2_22.webp',
+    'images/image2_23.webp',
+    'images/image2_24.webp',
+    'images/image2_25.webp',
+    'images/image2_26.webp',
+    'images/image2_27.webp',
+    'images/image2_28.webp',
+    'images/image2_29.webp',
+    'images/image2_30.webp',
+    'images/image2_31.webp',
+    'images/image2_32.webp',
+    'images/image2_33.webp',
+    'images/image2_34.webp',
+    'images/image2_35.webp',
+    'images/image2_36.webp',
+    'images/image2_37.webp',
+    'images/image2_38.webp',
+    'images/image2_39.webp',
+    'images/image2_40.webp',
+    'images/image2_41.webp',
+    'images/image2_42.webp',
+    'images/image2_43.webp',
+    'images/image2_44.webp',
+    'images/image2_45.webp',
+    'images/image2_46.webp',
+    'images/image2_47.webp',
     'images/image3.webp'
 ];
+const IMAGE2_MAX_INDEX_BEFORE_GET_ANSWER = 39;
+const IMAGE2_MAX_INDEX = 47;
+let currentImage2Index = 0;
 
 // プリロードされた画像のキャッシュ
 const imageCache = new Map();
@@ -144,33 +181,26 @@ questionForm.addEventListener('submit', async (e) => {
         
         // ローディング画像をimage2_0.webpに設定（前回のimage3.webpを上書き）
         // プリロードされた画像を使用
+        currentImage2Index = 0;
         setImageFromCache(loadingImage, 'images/image2_0.webp');
         
         // APIリクエストを即座に送信（非同期で実行）
         const apiPromise = sendToAPI(question);
         
         // 画像切り替えアニメーションを開始
-        await performImageAnimation();
+        await performImageAnimation_before_get_answer();
         
         // APIレスポンスを待機
         const answer = await apiPromise;
-        
-        // // image3.webp表示から1.0秒経過しているかチェック
-        // const timeSinceImage3 = Date.now() - image3StartTime;
-        // if (timeSinceImage3 >= 1000) {
-        //     // 1.0秒以上経過している場合は即座に表示
-        //     displayAnswer(answer);
-        // } else {
-        //     // 1.0秒未満の場合は残り時間待機
-        //     const remainingTime = 1000 - timeSinceImage3;
-        //     await sleep(remainingTime);
-        //     displayAnswer(answer);
-        // }
+
+        // 画像切り替えアニメーションを開始
+        await performImageAnimation_after_get_answer();
 
         displayAnswer(answer);
         
     } catch (error) {
         console.error('エラーが発生しました:', error);
+        await performImageAnimation_after_get_answer();
         displayError('申し訳ございません。エラーが発生しました。もう一度お試しください。');
     } finally {
         // 送信ボタンを再有効化
@@ -179,69 +209,23 @@ questionForm.addEventListener('submit', async (e) => {
     }
 });
 
-// image3.webp表示開始時刻を記録する変数
-let image3StartTime = 0;
-
 // 画像切り替えアニメーション
-async function performImageAnimation() {
-    const FIRST_GAP_TIME = 250;
-    const GAP_TIME = 250;
-
-    // ボタン押下から0.5秒待機
+const FIRST_GAP_TIME = 0;
+const GAP_TIME = 75;
+async function performImageAnimation_before_get_answer() {
     await sleep(FIRST_GAP_TIME);
-    
-    // image2_2.webpに切り替え（0.5秒待機）
-    setImageFromCache(loadingImage, 'images/image2_2.webp');
-    await sleep(GAP_TIME);
-    
-    // image2_3.webpに切り替え（0.5秒待機）
-    setImageFromCache(loadingImage, 'images/image2_3.webp');
-    await sleep(GAP_TIME);
-    
-    // image2_4.webpに切り替え（0.5秒待機）
-    setImageFromCache(loadingImage, 'images/image2_4.webp');
-    await sleep(GAP_TIME);
-    
-    // image2_5.webpに切り替え（0.5秒待機）
-    setImageFromCache(loadingImage, 'images/image2_5.webp');
-    await sleep(GAP_TIME);
-    
-    // image2_6.webpに切り替え（0.5秒待機）
-    setImageFromCache(loadingImage, 'images/image2_6.webp');
-    await sleep(GAP_TIME);
+    for (; currentImage2Index <= IMAGE2_MAX_INDEX_BEFORE_GET_ANSWER; currentImage2Index++) {
+        setImageFromCache(loadingImage, `images/image2_${currentImage2Index}.webp`);
+        await sleep(GAP_TIME);
+    }
+}
 
-    // image2_7.webpに切り替え（0.5秒待機）
-    setImageFromCache(loadingImage, 'images/image2_7.webp');
-    await sleep(GAP_TIME);
-    
-    // image2_8.webpに切り替え（0.5秒待機）
-    setImageFromCache(loadingImage, 'images/image2_8.webp');
-    await sleep(GAP_TIME);
-    
-    // image2_9.webpに切り替え（0.5秒待機）
-    setImageFromCache(loadingImage, 'images/image2_9.webp');
-    await sleep(GAP_TIME);
-    
-    // image2_10.webpに切り替え（0.5秒待機）
-    setImageFromCache(loadingImage, 'images/image2_10.webp');
-    await sleep(GAP_TIME);
-    
-    // image2_11.webpに切り替え（0.5秒待機）
-    setImageFromCache(loadingImage, 'images/image2_11.webp');
-    await sleep(GAP_TIME);
-
-    // image2_12.webpに切り替え（0.5秒待機）
-    setImageFromCache(loadingImage, 'images/image2_12.webp');
-    await sleep(GAP_TIME);
-
-    // image2_13.webpに切り替え（0.5秒待機）
-    setImageFromCache(loadingImage, 'images/image2_13.webp');
-    await sleep(GAP_TIME);
-    
-    // image3.webpに切り替え（時刻を記録）
+async function performImageAnimation_after_get_answer() {
+    for (; currentImage2Index <= IMAGE2_MAX_INDEX; currentImage2Index++) {
+        setImageFromCache(loadingImage, `images/image2_${currentImage2Index}.webp`);
+        await sleep(GAP_TIME);
+    }
     setImageFromCache(loadingImage, 'images/image3.webp');
-    image3StartTime = Date.now();
-    // await sleep(GAP_TIME);
 }
 
 // 指定時間待機する関数
