@@ -280,14 +280,7 @@ async function sendToAPI(question) {
 
 // 回答を表示
 function displayAnswer(answer) {
-    // 語尾の「。」「.」「です」を除去
     let processedAnswer = answer;
-    
-    // 語尾の「。」と「.」を除去
-    processedAnswer = processedAnswer.replace(/[。.]$/, '');
-    
-    // 語尾の「です」を除去
-    processedAnswer = processedAnswer.replace(/です$/, '');
     
     // 空文字列になった場合は元の文字列を使用
     if (processedAnswer.trim() === '') {
