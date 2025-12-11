@@ -39,13 +39,20 @@
                     <img id="display-image" src="images/image1.webp" alt="言い切り画面" class="main-image" loading="lazy" width="898" height="1596">
                     <div class="overlay-form">
                         <form id="question-form" class="question-form">
-                            <textarea 
-                                id="question-input" 
-                                placeholder="言い切りたいことを入力してください" 
-                                rows="3"
-                                required
-                            ></textarea>
-                            <button type="submit" class="submit-btn">言い切る</button>
+                            <div class="input-group">
+                                <textarea 
+                                    id="question-input" 
+                                    placeholder="言い切りたいことを入力してください" 
+                                    rows="3"
+                                    required
+                                ></textarea>
+                                <button type="submit" class="submit-btn">
+                                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                        <path d="M12 4L12 20M12 4L6 10M12 4L18 10" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                    </svg>
+                                </button>
+                            </div>
+                            <p class="terms-notice">送信をもって<a href="terms-of-use-and-privacy-policy.html">利用規約</a>および<a href="terms-of-use-and-privacy-policy.html">プライバシーポリシー</a>に同意したものとみなします。内容は保存・AI処理され、他のユーザーに表示される場合がありますので、個人情報や機密情報の記載はお控えください。</p>
                         </form>
                     </div>
                 </div>
