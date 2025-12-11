@@ -123,6 +123,10 @@ body {
     box-shadow: 0 0 0 3px rgba(108, 117, 125, 0.1);
 }
 
+#question-input::placeholder {
+    font-size: 86%;
+}
+
 .submit-btn {
     background: rgb(212, 65, 40);
     color: white;
@@ -161,7 +165,7 @@ body {
 }
 
 .terms-notice {
-    font-size: 11px;
+    font-size: 10px;
     color: #666;
     line-height: 1.5;
     margin-top: 10px;
