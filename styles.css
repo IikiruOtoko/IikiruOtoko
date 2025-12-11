@@ -92,6 +92,13 @@ body {
     /* 幅はJavaScriptで動的に設定 */
 }
 
+.overlay-answer {
+    max-height: calc(100vh - 80px);
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+}
+
 .question-form {
     display: flex;
     flex-direction: column;
@@ -189,6 +196,9 @@ body {
     background: transparent;
     border-radius: 15px;
     padding: 0;
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
 }
 
 .answer-content h3 {
@@ -200,14 +210,16 @@ body {
 
 .answer-text {
     color: #333;
-    line-height: 1.6;
-    font-size: 42px;
+    line-height: 1.4;
+    font-size: 40px;
     font-weight: bold;
     margin-bottom: 15px;
     white-space: pre-wrap;
     max-height: 200px;
     overflow-y: auto;
     text-align: center;
+    flex-shrink: 1;
+    min-height: 0;
 }
 
 .new-question-btn {
@@ -260,6 +272,10 @@ body {
         padding: 15px;
         bottom: 80px;
         width: 90% !important; /* JavaScriptで設定される幅を上書き */
+    }
+    
+    .overlay-answer {
+        max-height: calc(100vh - 180px);
     }
     
     .input-group {
