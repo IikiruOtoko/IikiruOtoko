@@ -9,9 +9,8 @@ const ACTUAL_VIDEO_HEIGHT = 1604;
 const ACTUAL_VIDEO_ASPECT_RATIO = ACTUAL_VIDEO_WIDTH / ACTUAL_VIDEO_HEIGHT; // 約0.566
 
 // テキスト表示の切り替え時間（秒）
-const TIME_LOADING_END = 2.4; // 「処理中...」の表示終了時間
-const TIME_ANSWER_CHECK = 3.9; // この時点でAPI結果をチェック
-const TIME_ANSWER_DISPLAY = 5.5; // 回答の表示開始時間
+const TIME_LOADING_END = 7.18; // 質問内容の表示終了時間
+const TIME_ANSWER_DISPLAY = 8.37; // 回答の表示開始時間（この時点でAPI結果をチェック）
 
 // テキスト表示のフォントサイズ
 const FontSize = '32px';
@@ -32,8 +31,12 @@ const answerContent = document.getElementById('answer-content');
 // エラー状態を追跡（グローバル）
 let globalErrorState = false;
 
+// 答えを表示しているかどうかを追跡（グローバル）
+let isShowingAnswer = false;
+
 // API設定
-const API_URL_BASE = 'https://iikiruotokoapi-1.onrender.com/';
+// const API_URL_BASE = 'https://iikiruotokoapi-1.onrender.com/';
+const API_URL_BASE = 'http://localhost:10000/';
 const API_URL = API_URL_BASE + 'chat';
 
 // overlayの固定width（一度設定したら変更しない）
@@ -153,9 +156,16 @@ function updateVideoSize() {
             const mediaTop = mediaRect.top;
             const containerTop = containerRect.top;
             
+            // textareaやanswer-textの高さを調整
+            const textarea = overlay.querySelector('textarea');
+            const answerText = overlay.querySelector('.answer-text');
+            const formContent = overlay.querySelector('.form-content');
+            const answerContent = overlay.querySelector('.answer-content');
+            
             // 動画の上端からの相対位置を計算
-            const overlayTopPercent = 66;
-            const overlayBottomPercent = 90; 
+            // 答えを表示する際は 72、質問時は 66
+            const overlayTopPercent = isShowingAnswer ? 72 : 66;
+            const overlayBottomPercent = 90;
             
             const overlayHeight = mediaHeight * (overlayBottomPercent - overlayTopPercent) / 100;
             
@@ -172,12 +182,6 @@ function updateVideoSize() {
             
             // 内部要素の高さを調整
             const overlayPadding = 15; // padding: 15px（上下）
-            
-            // textareaやanswer-textの高さを調整
-            const textarea = overlay.querySelector('textarea');
-            const answerText = overlay.querySelector('.answer-text');
-            const formContent = overlay.querySelector('.form-content');
-            const answerContent = overlay.querySelector('.answer-content');
             
             // フォーム表示時（質問時）の処理
             if (formContent && !formContent.classList.contains('hidden')) {
@@ -225,7 +229,7 @@ function updateVideoSize() {
                 }
                 
                 // テキストボックスの高さ = overlayの高さの50%
-                const contentHeight = overlayHeight * 0.4;
+                const contentHeight = overlayHeight * 0.425;
                 
                 const textarea = overlay.querySelector('textarea');
                 if (textarea && contentHeight > 0) {
@@ -307,8 +311,8 @@ questionForm.addEventListener('submit', async (e) => {
         formContent.classList.add('hidden');
         answerContent.classList.remove('hidden');
         
-        // 回答エリアに初期テキストを表示（ローディング中）
-        answerText.textContent = '処理中...';
+        // 回答エリアに質問内容を初期表示
+        answerText.textContent = question;
         answerText.style.fontSize = '32px';
         
         // オーバーレイの位置を即座に設定（一瞬の位置ずれを防ぐ）
@@ -352,10 +356,14 @@ questionForm.addEventListener('submit', async (e) => {
         
         // API結果の状態を管理
         let apiResult = null;
-        let hasReachedAnswerCheck = false;
+        let hasReachedAnswerDisplay = false;
         let retryPlayHandlers = []; // 再試行イベントハンドラーを保存
         // エラー状態をリセット
         globalErrorState = false;
+        // 答え表示状態をリセット（質問内容を表示するので false）
+        isShowingAnswer = false;
+        // 質問内容を保存
+        const savedQuestion = question;
         
         // 動画の再生時間に応じてテキストを更新する関数
         const changeTextAndFontSizeImmediately = (text, fontSize) => {
@@ -368,31 +376,43 @@ questionForm.addEventListener('submit', async (e) => {
             });
         };
         
-        // 動画の再生時間に応じてテキストを更新する関数
+        // 動画の再生時間に応じてテキストとoverlayの表示を更新する関数
         const updateAnswerTextByTime = (currentTime, answerData) => {
-            if (currentTime < TIME_ANSWER_CHECK) {
-                if (currentTime < TIME_LOADING_END) {
-                    changeTextAndFontSizeImmediately('処理中...', FontSize);
-                } else {
-                    changeTextAndFontSizeImmediately('処理中...', FontSize);
-                }
-            } else if (!answerData) {
-                changeTextAndFontSizeImmediately('処理中...', FontSize);
-            } else if (answerData && currentTime < TIME_ANSWER_DISPLAY) {
-                changeTextAndFontSizeImmediately('処理中...', FontSize);
-            } else if (answerData) {
-                changeTextAndFontSizeImmediately(answerData, FontSizeBig);
-                
-                // 回答表示後、ボタンを段階的に表示
-                setTimeout(() => {
-                    newQuestionBtn.style.display = 'block';
-                    // 少し遅延を入れてからフェードイン
-                    setTimeout(() => {
-                        newQuestionBtn.classList.add('visible');
-                    }, 100);
-                }, 1500);
+            if (currentTime < TIME_LOADING_END) {
+                // TIME_LOADING_END までは質問内容を表示
+                changeTextAndFontSizeImmediately(savedQuestion, FontSize);
+                // overlay は表示（質問内容を見せるため）
+                overlay.style.display = 'block';
+                isShowingAnswer = false; // 質問内容を表示しているので false
+            } else if (currentTime < TIME_ANSWER_DISPLAY) {
+                // TIME_ANSWER_DISPLAY までは overlay を非表示（動画だけ表示）
+                overlay.style.display = 'none';
+                isShowingAnswer = true; // overlay を消した時点で true に設定（答え表示の準備）
+                updateVideoSize();
             } else {
-                changeTextAndFontSizeImmediately('処理中...', FontSize);
+                // TIME_ANSWER_DISPLAY 以降
+                if (answerData) {
+                    // API結果が返ってきている場合、overlay を表示し、答えを表示
+                    // まず overlay を表示状態にしてから位置を更新する
+                    overlay.style.display = 'block';
+                    isShowingAnswer = true; // 答えを表示しているので true
+                    // overlay の位置を更新（72% の位置に）
+                    updateVideoSize();
+                    changeTextAndFontSizeImmediately(answerData, FontSizeBig);
+                    
+                    // 回答表示後、ボタンを段階的に表示
+                    setTimeout(() => {
+                        newQuestionBtn.style.display = 'block';
+                        // 少し遅延を入れてからフェードイン
+                        setTimeout(() => {
+                            newQuestionBtn.classList.add('visible');
+                        }, 100);
+                    }, 1500);
+                } else {
+                    // API結果がまだ返ってきていない場合、overlay は非表示のまま
+                    overlay.style.display = 'none';
+                    isShowingAnswer = false; // まだ答えを表示していないので false
+                }
             }
         };
         
@@ -402,30 +422,15 @@ questionForm.addEventListener('submit', async (e) => {
             
             // APIエラーが発生した場合
             if (!result.success) {
-                // エラー状態を設定（グローバル）
-                globalErrorState = true;
-                // 動画を停止
-                answerVideo.pause();
-                // 再試行イベントリスナーを削除
-                retryPlayHandlers.forEach(handler => {
-                    document.removeEventListener('touchstart', handler);
-                    document.removeEventListener('click', handler);
-                });
-                retryPlayHandlers = [];
-                // エラーメッセージを表示
-                displayError(result.error);
-                // 「新しい質問」ボタンを表示
-                newQuestionBtn.style.display = 'block';
-                setTimeout(() => {
-                    newQuestionBtn.classList.add('visible');
-                }, 100);
                 // timeupdateイベントリスナーを削除
                 answerVideo.removeEventListener('timeupdate', checkTimeUpdate);
+                // フォーム表示に戻してエラーを表示
+                resetToFormWithError(result.error, retryPlayHandlers);
                 return;
             }
             
-            // APIチェック時間を過ぎていれば、すぐに動画を再開（成功時のみ）
-            if (hasReachedAnswerCheck) {
+            // TIME_ANSWER_DISPLAY を過ぎていれば、すぐに動画を再開（成功時のみ）
+            if (hasReachedAnswerDisplay) {
                 // 現在の時刻に応じてテキストを更新
                 updateAnswerTextByTime(answerVideo.currentTime, result.answerData);
                 // 動画が停止している場合は再開して最後まで再生
@@ -461,27 +466,15 @@ questionForm.addEventListener('submit', async (e) => {
             
             // APIエラーが既に返ってきている場合、動画を停止して処理を終了
             if (apiResult && !apiResult.success) {
-                // エラー状態を設定（グローバル）
-                globalErrorState = true;
-                answerVideo.pause();
-                // 再試行イベントリスナーを削除
-                retryPlayHandlers.forEach(handler => {
-                    document.removeEventListener('touchstart', handler);
-                    document.removeEventListener('click', handler);
-                });
-                retryPlayHandlers = [];
-                displayError(apiResult.error);
-                newQuestionBtn.style.display = 'block';
-                setTimeout(() => {
-                    newQuestionBtn.classList.add('visible');
-                }, 100);
                 answerVideo.removeEventListener('timeupdate', checkTimeUpdate);
+                // フォーム表示に戻してエラーを表示
+                resetToFormWithError(apiResult.error, retryPlayHandlers);
                 return;
             }
             
-            // API結果チェック時間に達したらAPI結果をチェック
-            if (currentTime >= TIME_ANSWER_CHECK && !hasReachedAnswerCheck) {
-                hasReachedAnswerCheck = true;
+            // TIME_ANSWER_DISPLAY に達したらAPI結果をチェック
+            if (currentTime >= TIME_ANSWER_DISPLAY && !hasReachedAnswerDisplay) {
+                hasReachedAnswerDisplay = true;
                 
                 if (apiResult) {
                     // API結果が既に返ってきている場合
@@ -489,21 +482,10 @@ questionForm.addEventListener('submit', async (e) => {
                         updateAnswerTextByTime(currentTime, apiResult.answerData);
                         // 動画は続行（最後まで再生）
                     } else {
-                        // エラーの場合、動画を停止
-                        globalErrorState = true;
-                        answerVideo.pause();
-                        // 再試行イベントリスナーを削除
-                        retryPlayHandlers.forEach(handler => {
-                            document.removeEventListener('touchstart', handler);
-                            document.removeEventListener('click', handler);
-                        });
-                        retryPlayHandlers = [];
-                        displayError(apiResult.error);
-                        newQuestionBtn.style.display = 'block';
-                        setTimeout(() => {
-                            newQuestionBtn.classList.add('visible');
-                        }, 100);
+                        // エラーの場合
                         answerVideo.removeEventListener('timeupdate', checkTimeUpdate);
+                        // フォーム表示に戻してエラーを表示
+                        resetToFormWithError(apiResult.error, retryPlayHandlers);
                         return;
                     }
                 } else {
@@ -512,11 +494,11 @@ questionForm.addEventListener('submit', async (e) => {
                 }
             }
             
-            // 時間に応じてテキストを更新（API結果がなくても「処理中...」は表示可能）
+            // 時間に応じてテキストとoverlayを更新
             if (apiResult && apiResult.success) {
                 updateAnswerTextByTime(currentTime, apiResult.answerData);
             } else {
-                // API結果がまだない場合でも、TIME_ANSWER_CHECKまでは「処理中...」を表示
+                // API結果がまだない場合でも、時間に応じて更新
                 updateAnswerTextByTime(currentTime, null);
             }
         };
@@ -548,7 +530,8 @@ questionForm.addEventListener('submit', async (e) => {
         
     } catch (error) {
         console.error('エラーが発生しました:', error);
-        displayError('申し訳ございません。エラーが発生しました。');
+        // フォーム表示に戻してエラーを表示
+        resetToFormWithError('申し訳ございません。エラーが発生しました。', []);
     } finally {
         // 送信ボタンを再有効化
         submitBtn.disabled = false;
@@ -626,13 +609,89 @@ function displayAnswer(answer) {
 function displayError(errorMessage) {
     answerText.textContent = errorMessage;
     answerText.style.fontSize = '32px';
-    answerText.style.fontWeight = 'normal';
+    answerText.style.fontWeight = 'bold';
+}
+
+// エラー時にフォーム表示に戻す関数
+function resetToFormWithError(errorMessage, retryPlayHandlers) {
+    // エラー状態を設定（グローバル）
+    globalErrorState = true;
+    // 答え表示状態をリセット
+    isShowingAnswer = false;
+    
+    // 動画を停止
+    if (answerVideo) {
+        answerVideo.pause();
+        answerVideo.currentTime = 0;
+    }
+    
+    // 再試行イベントリスナーを削除
+    if (retryPlayHandlers) {
+        retryPlayHandlers.forEach(handler => {
+            document.removeEventListener('touchstart', handler);
+            document.removeEventListener('click', handler);
+        });
+    }
+    
+    // 動画を非表示、画像を表示
+    answerVideo.classList.add('hidden');
+    displayImage.classList.remove('hidden');
+    
+    // フォームコンテンツを非表示、回答コンテンツを表示
+    formContent.classList.add('hidden');
+    answerContent.classList.remove('hidden');
+    
+    // エラーメッセージを表示
+    displayError(errorMessage);
+    
+    // 固定widthをリセット
+    fixedOverlayWidth = null;
+    
+    // overlay の位置を即座に66%の位置に設定
+    requestAnimationFrame(() => {
+        const container = contentArea.querySelector('.video-container');
+        if (container && overlay && displayImage) {
+            const mediaRect = displayImage.getBoundingClientRect();
+            const containerRect = container.getBoundingClientRect();
+            
+            if (mediaRect && containerRect) {
+                const mediaHeight = mediaRect.height;
+                const mediaTop = mediaRect.top;
+                const containerTop = containerRect.top;
+                
+                // 66%の位置に設定（質問時）
+                const overlayTopPercent = 66;
+                const overlayBottomPercent = 90;
+                const overlayHeight = mediaHeight * (overlayBottomPercent - overlayTopPercent) / 100;
+                const overlayTopInContainer = (mediaTop - containerTop) + (mediaHeight * overlayTopPercent / 100);
+                const distanceFromContainerBottom = containerRect.height - (overlayTopInContainer + overlayHeight);
+                
+                overlay.style.bottom = `${distanceFromContainerBottom}px`;
+                overlay.style.height = `${overlayHeight}px`;
+                overlay.style.maxHeight = `${overlayHeight}px`;
+                overlay.style.minHeight = `${overlayHeight}px`;
+            }
+        }
+        // 最終的な位置調整
+        updateVideoSize();
+    });
+    
+    // overlayを表示
+    overlay.style.display = 'block';
+    
+    // 「新しい言い切り」ボタンを表示（右下に配置）
+    newQuestionBtn.style.display = 'block';
+    setTimeout(() => {
+        newQuestionBtn.classList.add('visible');
+    }, 100);
 }
 
 // 新しい質問ボタンの処理
 newQuestionBtn.addEventListener('click', () => {
     // エラー状態をリセット
     globalErrorState = false;
+    // 答え表示状態をリセット（即座に false に設定）
+    isShowingAnswer = false;
     
     // ボタンを完全に非表示にする
     newQuestionBtn.style.display = 'none';
@@ -654,6 +713,38 @@ newQuestionBtn.addEventListener('click', () => {
     
     // 固定widthをリセット（新しい質問時は再計算可能にする）
     fixedOverlayWidth = null;
+    
+    // overlay の位置を即座に66%の位置に設定（一瞬の72%表示を防ぐ）
+    // updateVideoSize() の非同期処理が完了する前に、正しい位置を設定
+    requestAnimationFrame(() => {
+        const container = contentArea.querySelector('.video-container');
+        if (container && overlay && displayImage) {
+            const mediaRect = displayImage.getBoundingClientRect();
+            const containerRect = container.getBoundingClientRect();
+            
+            if (mediaRect && containerRect) {
+                const mediaHeight = mediaRect.height;
+                const mediaTop = mediaRect.top;
+                const containerTop = containerRect.top;
+                
+                // 66%の位置に設定（質問時）
+                const overlayTopPercent = 66;
+                const overlayBottomPercent = 90;
+                const overlayHeight = mediaHeight * (overlayBottomPercent - overlayTopPercent) / 100;
+                const overlayTopInContainer = (mediaTop - containerTop) + (mediaHeight * overlayTopPercent / 100);
+                const distanceFromContainerBottom = containerRect.height - (overlayTopInContainer + overlayHeight);
+                
+                overlay.style.bottom = `${distanceFromContainerBottom}px`;
+                overlay.style.height = `${overlayHeight}px`;
+                overlay.style.maxHeight = `${overlayHeight}px`;
+                overlay.style.minHeight = `${overlayHeight}px`;
+            }
+        }
+    });
+    
+    // overlay の位置を即座に更新（66% の位置に戻す）
+    // isShowingAnswer = false の状態で updateVideoSize() を呼ぶ
+    updateVideoSize();
     
     // フォームをリセット
     questionForm.reset();
