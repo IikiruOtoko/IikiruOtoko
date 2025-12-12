@@ -16,6 +16,10 @@ const TIME_ANSWER_DISPLAY = 5.0; // 回答の表示開始時間（この時点�
 const FontSize = '32px';
 const FontSizeBig = '40px';
 
+// overlayの位置設定（動画の上端からの相対位置のパーセンテージ）
+const OVERLAY_TOP_PERCENT_ANSWER = 71.25; // 答えを表示する際の位置
+const OVERLAY_TOP_PERCENT_QUESTION = 65.25; // 質問時の位置
+
 // DOM要素の取得
 const questionForm = document.getElementById('question-form');
 const questionInput = document.getElementById('question-input');
@@ -163,8 +167,7 @@ function updateVideoSize() {
             const answerContent = overlay.querySelector('.answer-content');
             
             // 動画の上端からの相対位置を計算
-            // 答えを表示する際は 71.25、質問時は 65.25
-            const overlayTopPercent = isShowingAnswer ? 71.25 : 65.25;
+            const overlayTopPercent = isShowingAnswer ? OVERLAY_TOP_PERCENT_ANSWER : OVERLAY_TOP_PERCENT_QUESTION;
             const overlayBottomPercent = 90;
             
             const overlayHeight = mediaHeight * (overlayBottomPercent - overlayTopPercent) / 100;
@@ -396,7 +399,6 @@ questionForm.addEventListener('submit', async (e) => {
                     // まず overlay を表示状態にしてから位置を更新する
                     overlay.style.display = 'block';
                     isShowingAnswer = true; // 答えを表示しているので true
-                    // overlay の位置を更新（71.25% の位置に）
                     updateVideoSize();
                     changeTextAndFontSizeImmediately(answerData, FontSizeBig);
                     
@@ -647,7 +649,6 @@ function resetToFormWithError(errorMessage, retryPlayHandlers) {
     // 固定widthをリセット
     fixedOverlayWidth = null;
     
-    // overlay の位置を即座に65.25%の位置に設定
     requestAnimationFrame(() => {
         const container = contentArea.querySelector('.video-container');
         if (container && overlay && displayImage) {
@@ -659,7 +660,7 @@ function resetToFormWithError(errorMessage, retryPlayHandlers) {
                 const mediaTop = mediaRect.top;
                 const containerTop = containerRect.top;
                 
-                const overlayTopPercent = 65.25;
+                const overlayTopPercent = OVERLAY_TOP_PERCENT_QUESTION;
                 const overlayBottomPercent = 90;
                 const overlayHeight = mediaHeight * (overlayBottomPercent - overlayTopPercent) / 100;
                 const overlayTopInContainer = (mediaTop - containerTop) + (mediaHeight * overlayTopPercent / 100);
@@ -713,7 +714,6 @@ newQuestionBtn.addEventListener('click', () => {
     // 固定widthをリセット（新しい質問時は再計算可能にする）
     fixedOverlayWidth = null;
     
-    // overlay の位置を即座に65.25%の位置に設定（一瞬の71.25%表示を防ぐ）
     // updateVideoSize() の非同期処理が完了する前に、正しい位置を設定
     requestAnimationFrame(() => {
         const container = contentArea.querySelector('.video-container');
@@ -726,8 +726,7 @@ newQuestionBtn.addEventListener('click', () => {
                 const mediaTop = mediaRect.top;
                 const containerTop = containerRect.top;
                 
-                // 65.25%の位置に設定（質問時）
-                const overlayTopPercent = 65.25;
+                const overlayTopPercent = OVERLAY_TOP_PERCENT_QUESTION;
                 const overlayBottomPercent = 90;
                 const overlayHeight = mediaHeight * (overlayBottomPercent - overlayTopPercent) / 100;
                 const overlayTopInContainer = (mediaTop - containerTop) + (mediaHeight * overlayTopPercent / 100);
@@ -741,7 +740,6 @@ newQuestionBtn.addEventListener('click', () => {
         }
     });
     
-    // overlay の位置を即座に更新（65.25% の位置に戻す）
     // isShowingAnswer = false の状態で updateVideoSize() を呼ぶ
     updateVideoSize();
     
