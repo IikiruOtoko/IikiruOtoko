@@ -33,50 +33,44 @@
 <body>
     <div class="container">
         <div class="main-content">
-            <!-- 言い切り入力エリア -->
-            <div id="question-area" class="question-area">
-                <div class="image-container">
-                    <img id="display-image" src="images/image1.webp" alt="言い切り画面" class="main-image" loading="lazy" width="898" height="1596">
-                    <div class="overlay-form">
-                        <form id="question-form" class="question-form">
-                            <div class="input-group">
-                                <textarea 
-                                    id="question-input" 
-                                    placeholder="言い切りたいことを入力してください" 
-                                    rows="3"
-                                    required
-                                ></textarea>
-                                <button type="submit" class="submit-btn">
-                                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                        <path d="M12 4L12 20M12 4L6 10M12 4L18 10" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                                    </svg>
-                                </button>
-                            </div>
-                            <p class="terms-notice">送信をもって<a href="terms-of-use-and-privacy-policy.html">利用規約</a>と<a href="terms-of-use-and-privacy-policy.html">プライバシーポリシー</a>に同意したものとみなします。
-                            内容は保存・AI処理され、他のユーザーに表示される場合があります。個人情報や機密情報の記載はお控えください。<br>
-                            言い切る男の回答は必ずしも正しいとは限りません。</p>
-                        </form>
-                    </div>
-                </div>
-            </div>
-            
-            <!-- 回答表示エリア -->
-            <div id="answer-area" class="answer-area hidden">
-                <div class="image-container">
-                    <img src="images/image3.webp" alt="回答画面" class="main-image">
-                    <div class="overlay-answer">
-                        <div class="answer-content">
+            <!-- コンテンツエリア（質問と回答を統合） -->
+            <div id="content-area" class="content-area">
+                <div class="video-container">
+                    <!-- 画像（質問時） -->
+                    <img id="display-image" src="images/iikiri.webp" alt="言い切り画面" class="main-video">
+                    <!-- 動画（回答時） -->
+                    <video id="answer-video" src="images/iikiri.mp4" muted playsinline preload="metadata" class="main-video hidden"></video>
+                    
+                    <!-- オーバーレイ（質問時と回答時で共通） -->
+                    <div id="overlay" class="overlay">
+                        <!-- フォームコンテンツ（質問時） -->
+                        <div id="form-content" class="form-content">
+                            <form id="question-form" class="question-form">
+                                <div class="input-group">
+                                    <textarea 
+                                        id="question-input" 
+                                        placeholder="言い切りたいことを入力してください" 
+                                        rows="3"
+                                        required
+                                    ></textarea>
+                                    <button type="submit" class="submit-btn">
+                                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                            <path d="M12 4L12 20M12 4L6 10M12 4L18 10" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                        </svg>
+                                    </button>
+                                </div>
+                                <p class="terms-notice">送信をもって<a href="terms-of-use-and-privacy-policy.html">利用規約</a>と<a href="terms-of-use-and-privacy-policy.html">プライバシーポリシー</a>に同意したものとみなします。
+                                内容は保存・AI処理され、他のユーザーに表示される場合があります。個人情報や機密情報の記載はお控えください。<br>
+                                言い切る男の回答は必ずしも正しいとは限りません。</p>
+                            </form>
+                        </div>
+                        
+                        <!-- 回答コンテンツ（回答時） -->
+                        <div id="answer-content" class="answer-content hidden">
                             <div id="answer-text" class="answer-text"></div>
                             <button id="new-question-btn" class="new-question-btn">新しい言い切りをする</button>
                         </div>
                     </div>
-                </div>
-            </div>
-            
-            <!-- ローディングエリア -->
-            <div id="loading-area" class="loading-area hidden">
-                <div class="image-container">
-                    <img id="loading-image" src="images/image2_1.webp" alt="処理中" class="main-image">
                 </div>
             </div>
         </div>
