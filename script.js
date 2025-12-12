@@ -6,11 +6,11 @@ const VIDEO_HEIGHT = 1080;
 // 実際の動画サイズ（既知）
 const ACTUAL_VIDEO_WIDTH = 908;
 const ACTUAL_VIDEO_HEIGHT = 1604;
-const ACTUAL_VIDEO_ASPECT_RATIO = ACTUAL_VIDEO_WIDTH / ACTUAL_VIDEO_HEIGHT; // 約0.566
+const ACTUAL_VIDEO_ASPECT_RATIO = ACTUAL_VIDEO_WIDTH / ACTUAL_VIDEO_HEIGHT;
 
 // テキスト表示の切り替え時間（秒）
-const TIME_LOADING_END = 7.18; // 質問内容の表示終了時間
-const TIME_ANSWER_DISPLAY = 8.37; // 回答の表示開始時間（この時点でAPI結果をチェック）
+const TIME_LOADING_END = 3.6; // 質問内容の表示終了時間
+const TIME_ANSWER_DISPLAY = 5.0; // 回答の表示開始時間（この時点でAPI結果をチェック）
 
 // テキスト表示のフォントサイズ
 const FontSize = '32px';
@@ -35,8 +35,8 @@ let globalErrorState = false;
 let isShowingAnswer = false;
 
 // API設定
-// const API_URL_BASE = 'https://iikiruotokoapi-1.onrender.com/';
-const API_URL_BASE = 'http://localhost:10000/';
+const API_URL_BASE = 'https://iikiruotokoapi-1.onrender.com/';
+// const API_URL_BASE = 'http://localhost:10000/';
 const API_URL = API_URL_BASE + 'chat';
 
 // overlayの固定width（一度設定したら変更しない）
@@ -163,8 +163,8 @@ function updateVideoSize() {
             const answerContent = overlay.querySelector('.answer-content');
             
             // 動画の上端からの相対位置を計算
-            // 答えを表示する際は 72、質問時は 66
-            const overlayTopPercent = isShowingAnswer ? 72 : 66;
+            // 答えを表示する際は 71.25、質問時は 65.25
+            const overlayTopPercent = isShowingAnswer ? 71.25 : 65.25;
             const overlayBottomPercent = 90;
             
             const overlayHeight = mediaHeight * (overlayBottomPercent - overlayTopPercent) / 100;
@@ -396,7 +396,7 @@ questionForm.addEventListener('submit', async (e) => {
                     // まず overlay を表示状態にしてから位置を更新する
                     overlay.style.display = 'block';
                     isShowingAnswer = true; // 答えを表示しているので true
-                    // overlay の位置を更新（72% の位置に）
+                    // overlay の位置を更新（71.25% の位置に）
                     updateVideoSize();
                     changeTextAndFontSizeImmediately(answerData, FontSizeBig);
                     
@@ -647,7 +647,7 @@ function resetToFormWithError(errorMessage, retryPlayHandlers) {
     // 固定widthをリセット
     fixedOverlayWidth = null;
     
-    // overlay の位置を即座に66%の位置に設定
+    // overlay の位置を即座に65.25%の位置に設定
     requestAnimationFrame(() => {
         const container = contentArea.querySelector('.video-container');
         if (container && overlay && displayImage) {
@@ -659,8 +659,7 @@ function resetToFormWithError(errorMessage, retryPlayHandlers) {
                 const mediaTop = mediaRect.top;
                 const containerTop = containerRect.top;
                 
-                // 66%の位置に設定（質問時）
-                const overlayTopPercent = 66;
+                const overlayTopPercent = 65.25;
                 const overlayBottomPercent = 90;
                 const overlayHeight = mediaHeight * (overlayBottomPercent - overlayTopPercent) / 100;
                 const overlayTopInContainer = (mediaTop - containerTop) + (mediaHeight * overlayTopPercent / 100);
@@ -714,7 +713,7 @@ newQuestionBtn.addEventListener('click', () => {
     // 固定widthをリセット（新しい質問時は再計算可能にする）
     fixedOverlayWidth = null;
     
-    // overlay の位置を即座に66%の位置に設定（一瞬の72%表示を防ぐ）
+    // overlay の位置を即座に65.25%の位置に設定（一瞬の71.25%表示を防ぐ）
     // updateVideoSize() の非同期処理が完了する前に、正しい位置を設定
     requestAnimationFrame(() => {
         const container = contentArea.querySelector('.video-container');
@@ -727,8 +726,8 @@ newQuestionBtn.addEventListener('click', () => {
                 const mediaTop = mediaRect.top;
                 const containerTop = containerRect.top;
                 
-                // 66%の位置に設定（質問時）
-                const overlayTopPercent = 66;
+                // 65.25%の位置に設定（質問時）
+                const overlayTopPercent = 65.25;
                 const overlayBottomPercent = 90;
                 const overlayHeight = mediaHeight * (overlayBottomPercent - overlayTopPercent) / 100;
                 const overlayTopInContainer = (mediaTop - containerTop) + (mediaHeight * overlayTopPercent / 100);
@@ -742,7 +741,7 @@ newQuestionBtn.addEventListener('click', () => {
         }
     });
     
-    // overlay の位置を即座に更新（66% の位置に戻す）
+    // overlay の位置を即座に更新（65.25% の位置に戻す）
     // isShowingAnswer = false の状態で updateVideoSize() を呼ぶ
     updateVideoSize();
     
