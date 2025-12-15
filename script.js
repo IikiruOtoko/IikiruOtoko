@@ -299,7 +299,7 @@ questionForm.addEventListener('submit', async (e) => {
     submitBtn.disabled = true;
 
     if (typeof gtag === 'function') {
-        gtag('event', 'submit_question', {
+        gtag('event', 'iikiru_otoko_submit_question', {
             event_category: 'engagement',
             event_label: 'question_form'
         });
@@ -420,7 +420,7 @@ questionForm.addEventListener('submit', async (e) => {
                     if (!hasTrackedAnswerDisplay) {
                         hasTrackedAnswerDisplay = true;
                         if (typeof gtag === 'function') {
-                            gtag('event', 'answer_displayed', {
+                            gtag('event', 'iikiru_otoko_answer_displayed', {
                                 event_category: 'engagement',
                                 event_label: 'answer_complete'
                             });
