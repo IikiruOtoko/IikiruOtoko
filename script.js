@@ -81,6 +81,151 @@ function calculateVideoSize() {
     return { width: videoWidth, height: videoHeight };
 }
 
+// overlay関連のヘルパー関数
+
+/**
+ * フォントサイズで答えを表示しているか判定
+ * @returns {boolean} 答えを表示している場合true
+ */
+function isShowingAnswerText() {
+    if (!answerText) return false;
+    const computedFontSize = window.getComputedStyle(answerText).fontSize;
+    return computedFontSize === FontSizeBig || parseFloat(computedFontSize) >= 37;
+}
+
+/**
+ * overlayの幅を計算
+ * @param {DOMRect} mediaRect - メディア要素のgetBoundingClientRect()の結果
+ * @param {boolean} isMobilePortrait - モバイル縦向きかどうか
+ * @param {number|null} calculatedVideoWidth - 計算済みの動画幅
+ * @param {HTMLElement} currentMedia - 現在表示されているメディア要素
+ * @returns {number} overlayの幅
+ */
+function calculateOverlayWidth(mediaRect, isMobilePortrait, calculatedVideoWidth, currentMedia) {
+    if (fixedOverlayWidth !== null) {
+        return fixedOverlayWidth;
+    }
+    
+    let overlayWidth;
+    const actualMediaHeight = mediaRect.height;
+    
+    if (actualMediaHeight > 0) {
+        // 動画の高さから、アスペクト比を使って幅を計算
+        const calculatedVideoWidthFromHeight = actualMediaHeight * ACTUAL_VIDEO_ASPECT_RATIO;
+        overlayWidth = calculatedVideoWidthFromHeight * 0.965;
+    } else {
+        // フォールバック: 従来の方法
+        if (!isMobilePortrait) {
+            const videoWidth = calculatedVideoWidth !== null && calculatedVideoWidth > 0 
+                ? calculatedVideoWidth 
+                : calculateVideoSize().width;
+            overlayWidth = videoWidth * 0.965;
+        } else {
+            const actualMediaWidth = currentMedia.offsetWidth || currentMedia.clientWidth;
+            overlayWidth = actualMediaWidth * 0.965;
+        }
+    }
+    
+    // 計算したwidthを固定widthとして保存
+    fixedOverlayWidth = overlayWidth;
+    return overlayWidth;
+}
+
+/**
+ * overlayの位置（topPercent, bottomPercent）を計算
+ * @returns {{topPercent: number, bottomPercent: number}} overlayの位置パーセンテージ
+ */
+function calculateOverlayPosition() {
+    const formContent = overlay.querySelector('.form-content');
+    const answerContent = overlay.querySelector('.answer-content');
+    
+    // 動画の上端からの相対位置を計算
+    let overlayTopPercent = OVERLAY_TOP_PERCENT_QUESTION;
+    
+    if (formContent && !formContent.classList.contains('hidden')) {
+        // 質問フォームが表示されている場合
+        overlayTopPercent = OVERLAY_TOP_PERCENT_QUESTION;
+    } else if (answerContent && !answerContent.classList.contains('hidden') && answerText) {
+        // answerContentが表示されている場合は、フォントサイズで判定
+        if (isShowingAnswerText()) {
+            overlayTopPercent = OVERLAY_TOP_PERCENT_ANSWER;
+        } else {
+            overlayTopPercent = OVERLAY_TOP_PERCENT_QUESTION;
+        }
+    }
+    
+    // 答えを表示する時かつ答えが7文字以上の時は overlayBottomPercent_LongAnswer を使用
+    let overlayBottomPercent = overlayBottomPercent_Normal;
+    if (answerContent && !answerContent.classList.contains('hidden') && answerText && answerText.textContent && answerText.textContent.length >= 7) {
+        if (isShowingAnswerText()) {
+            overlayBottomPercent = overlayBottomPercent_LongAnswer;
+        }
+    }
+    
+    return { topPercent: overlayTopPercent, bottomPercent: overlayBottomPercent };
+}
+
+/**
+ * overlayのサイズと位置を設定
+ * @param {DOMRect} mediaRect - メディア要素のgetBoundingClientRect()の結果
+ * @param {DOMRect} containerRect - コンテナ要素のgetBoundingClientRect()の結果
+ * @param {number} overlayWidth - overlayの幅
+ */
+function updateOverlaySizeAndPosition(mediaRect, containerRect, overlayWidth) {
+    // 幅を設定
+    overlay.style.width = `${overlayWidth}px`;
+    overlay.style.maxWidth = `${overlayWidth}px`;
+    overlay.style.minWidth = `${overlayWidth}px`;
+    
+    // 位置と高さを計算
+    const { topPercent, bottomPercent } = calculateOverlayPosition();
+    const mediaHeight = mediaRect.height;
+    const mediaTop = mediaRect.top;
+    const containerTop = containerRect.top;
+    
+    const overlayHeight = mediaHeight * (bottomPercent - topPercent) / 100;
+    const overlayTopInContainer = (mediaTop - containerTop) + (mediaHeight * topPercent / 100);
+    const distanceFromContainerBottom = containerRect.height - (overlayTopInContainer + overlayHeight);
+    
+    // 位置と高さを設定
+    overlay.style.bottom = `${distanceFromContainerBottom}px`;
+    overlay.style.height = `${overlayHeight}px`;
+    overlay.style.maxHeight = `${overlayHeight}px`;
+    overlay.style.minHeight = `${overlayHeight}px`;
+    
+    return overlayHeight;
+}
+
+/**
+ * overlayの内部要素の高さを調整
+ * @param {number} overlayHeight - overlayの高さ
+ */
+function adjustOverlayContentHeight(overlayHeight) {
+    const formContent = overlay.querySelector('.form-content');
+    const answerContent = overlay.querySelector('.answer-content');
+    const answerTextElement = overlay.querySelector('.answer-text');
+    
+    // フォーム表示時（質問時）の処理
+    if (formContent && !formContent.classList.contains('hidden')) {
+        const textarea = overlay.querySelector('textarea');
+        if (textarea && overlayHeight > 0) {
+            const contentHeight = overlayHeight * 0.425;
+            textarea.style.height = `${contentHeight}px`;
+            textarea.style.minHeight = `${contentHeight}px`;
+            textarea.style.maxHeight = `${contentHeight}px`;
+        }
+    }
+    
+    // 回答表示時はanswer-textの高さを制限しない（中央配置のため）
+    if (answerContent && !answerContent.classList.contains('hidden')) {
+        if (answerTextElement) {
+            answerTextElement.style.height = 'auto';
+            answerTextElement.style.minHeight = 'auto';
+            answerTextElement.style.maxHeight = 'none';
+        }
+    }
+}
+
 // 動画・画像サイズを更新する関数
 function updateVideoSize() {
     const isMobilePortrait = window.innerWidth < 768 && window.innerHeight > window.innerWidth;
@@ -122,141 +267,13 @@ function updateVideoSize() {
         const mediaRect = currentMedia.getBoundingClientRect();
         const containerRect = container.getBoundingClientRect();
         
-        // 幅の設定（固定widthが設定されている場合はそれを使用、そうでない場合は計算）
-        let overlayWidth;
-        if (fixedOverlayWidth !== null) {
-            // 固定widthが設定されている場合はそれを使用
-            overlayWidth = fixedOverlayWidth;
-        } else {
-            // 固定widthが設定されていない場合は計算
-            // 動画の高さから横幅を計算（動画サイズ: 908 * 1604）
-            const actualMediaHeight = mediaRect.height;
-            if (actualMediaHeight > 0) {
-                // 動画の高さから、アスペクト比を使って幅を計算
-                const calculatedVideoWidthFromHeight = actualMediaHeight * ACTUAL_VIDEO_ASPECT_RATIO;
-                // その幅の0.965倍をoverlayの幅とする
-                overlayWidth = calculatedVideoWidthFromHeight * 0.965;
-            } else {
-                // フォールバック: 従来の方法
-                if (!isMobilePortrait) {
-                    const videoWidth = calculatedVideoWidth !== null && calculatedVideoWidth > 0 
-                        ? calculatedVideoWidth 
-                        : calculateVideoSize().width;
-                    overlayWidth = videoWidth * 0.965;
-                } else {
-                    const actualMediaWidth = currentMedia.offsetWidth || currentMedia.clientWidth;
-                    overlayWidth = actualMediaWidth * 0.965;
-                }
-            }
-            // 計算したwidthを固定widthとして保存
-            fixedOverlayWidth = overlayWidth;
-        }
+        // overlayの幅を計算
+        const overlayWidth = calculateOverlayWidth(mediaRect, isMobilePortrait, calculatedVideoWidth, currentMedia);
         
-        overlay.style.width = `${overlayWidth}px`;
-        overlay.style.maxWidth = `${overlayWidth}px`;
-        overlay.style.minWidth = `${overlayWidth}px`;
-        
-        // 動画の高さを基準に位置と高さを設定
+        // overlayのサイズと位置を設定
         if (containerRect && mediaRect) {
-            const mediaHeight = mediaRect.height;
-            const mediaTop = mediaRect.top;
-            const containerTop = containerRect.top;
-            
-            // textareaやanswer-textの高さを調整
-            const textarea = overlay.querySelector('textarea');
-            const answerTextElement = overlay.querySelector('.answer-text');
-            const formContent = overlay.querySelector('.form-content');
-            const answerContent = overlay.querySelector('.answer-content');
-            
-            // 動画の上端からの相対位置を計算
-            const overlayTopPercent = isShowingAnswer ? OVERLAY_TOP_PERCENT_ANSWER : OVERLAY_TOP_PERCENT_QUESTION;
-            // 答えを表示する時かつ答えが7文字以上の時は overlayBottomPercent_LongAnswer を使用
-            let overlayBottomPercent = overlayBottomPercent_Normal;
-            if (isShowingAnswer && answerText && answerText.textContent && answerText.textContent.length >= 7) {
-                overlayBottomPercent = overlayBottomPercent_LongAnswer;
-            }
-
-            const overlayHeight = mediaHeight * (overlayBottomPercent - overlayTopPercent) / 100;
-            
-            // コンテナ内でのテキストボックスの上端位置
-            const overlayTopInContainer = (mediaTop - containerTop) + (mediaHeight * overlayTopPercent / 100);
-            
-            // コンテナの下端からの距離 = コンテナの高さ - (上端位置 + 高さ)
-            const distanceFromContainerBottom = containerRect.height - (overlayTopInContainer + overlayHeight);
-            
-            overlay.style.bottom = `${distanceFromContainerBottom}px`;
-            overlay.style.height = `${overlayHeight}px`;
-            overlay.style.maxHeight = `${overlayHeight}px`;
-            overlay.style.minHeight = `${overlayHeight}px`;
-            
-            // 内部要素の高さを調整
-            const overlayPadding = 15; // padding: 15px（上下）
-            
-            // フォーム表示時（質問時）の処理
-            if (formContent && !formContent.classList.contains('hidden')) {
-                const inputGroupGap = 5; // gap: 5px（テキストボックスとボタンの間）
-                const questionFormGap = 8; // gap: 8px（question-formのgap、input-groupとterms-noticeの間）
-                
-                // ボタンの高さを取得
-                const submitBtn = overlay.querySelector('.submit-btn');
-                let buttonHeight = 34; // デフォルト
-                if (submitBtn) {
-                    buttonHeight = submitBtn.offsetHeight || submitBtn.clientHeight || 34;
-                }
-                
-                // terms-noticeの高さを直接取得
-                const termsNotice = overlay.querySelector('.terms-notice');
-                let termsNoticeHeight = 0;
-                if (termsNotice) {
-                    // 複数の方法で高さを取得して、最も確実な値を使用
-                    const termsNoticeStyle = window.getComputedStyle(termsNotice);
-                    const termsNoticeRect = termsNotice.getBoundingClientRect();
-                    
-                    // offsetHeight、scrollHeight、getBoundingClientRect()の高さを比較
-                    const offsetHeight = termsNotice.offsetHeight || 0;
-                    const scrollHeight = termsNotice.scrollHeight || 0;
-                    const rectHeight = termsNoticeRect.height || 0;
-                    
-                    // 最も大きい値を使用（テキストが折り返されている場合を考慮）
-                    termsNoticeHeight = Math.max(offsetHeight, scrollHeight, rectHeight);
-                    
-                    // マージンも考慮
-                    const termsNoticeMarginTop = parseFloat(termsNoticeStyle.marginTop) || 0;
-                    const termsNoticeMarginBottom = parseFloat(termsNoticeStyle.marginBottom) || 0;
-                    termsNoticeHeight += termsNoticeMarginTop + termsNoticeMarginBottom;
-                    
-                    // 高さが0の場合は、question-form全体から計算（フォールバック）
-                    if (termsNoticeHeight <= 0) {
-                        const questionForm = overlay.querySelector('.question-form');
-                        const inputGroup = overlay.querySelector('.input-group');
-                        if (questionForm && inputGroup) {
-                            const questionFormRect = questionForm.getBoundingClientRect();
-                            const inputGroupRect = inputGroup.getBoundingClientRect();
-                            termsNoticeHeight = questionFormRect.height - inputGroupRect.height - questionFormGap;
-                        }
-                    }
-                }
-                
-                // テキストボックスの高さ = overlayの高さの50%
-                const contentHeight = overlayHeight * 0.425;
-                
-                const textarea = overlay.querySelector('textarea');
-                if (textarea && contentHeight > 0) {
-                    textarea.style.height = `${contentHeight}px`;
-                    textarea.style.minHeight = `${contentHeight}px`;
-                    textarea.style.maxHeight = `${contentHeight}px`;
-                }
-            }
-            
-            // 回答表示時はanswer-textの高さを制限しない（中央配置のため）
-            if (answerContent && !answerContent.classList.contains('hidden')) {
-                if (answerTextElement) {
-                    // 中央配置のため、高さは自動
-                    answerTextElement.style.height = 'auto';
-                    answerTextElement.style.minHeight = 'auto';
-                    answerTextElement.style.maxHeight = 'none';
-                }
-            }
+            const overlayHeight = updateOverlaySizeAndPosition(mediaRect, containerRect, overlayWidth);
+            adjustOverlayContentHeight(overlayHeight);
         }
             }, 50); // 遅延を増やして、要素が確実にレンダリングされた後に高さを取得
         });
@@ -674,33 +691,8 @@ function resetToFormWithError(errorMessage, retryPlayHandlers) {
     // 固定widthをリセット
     fixedOverlayWidth = null;
     
+    // 最終的な位置調整
     requestAnimationFrame(() => {
-        const container = contentArea.querySelector('.video-container');
-        if (container && overlay && displayImage) {
-            const mediaRect = displayImage.getBoundingClientRect();
-            const containerRect = container.getBoundingClientRect();
-            
-            if (mediaRect && containerRect) {
-                const mediaHeight = mediaRect.height;
-                const mediaTop = mediaRect.top;
-                const containerTop = containerRect.top;
-                
-                const overlayTopPercent = OVERLAY_TOP_PERCENT_QUESTION;
-                let overlayBottomPercent = overlayBottomPercent_Normal;
-                if (isShowingAnswer && answerText && answerText.textContent && answerText.textContent.length >= 7) {
-                    overlayBottomPercent = overlayBottomPercent_LongAnswer;
-                }
-                const overlayHeight = mediaHeight * (overlayBottomPercent - overlayTopPercent) / 100;
-                const overlayTopInContainer = (mediaTop - containerTop) + (mediaHeight * overlayTopPercent / 100);
-                const distanceFromContainerBottom = containerRect.height - (overlayTopInContainer + overlayHeight);
-                
-                overlay.style.bottom = `${distanceFromContainerBottom}px`;
-                overlay.style.height = `${overlayHeight}px`;
-                overlay.style.maxHeight = `${overlayHeight}px`;
-                overlay.style.minHeight = `${overlayHeight}px`;
-            }
-        }
-        // 最終的な位置調整
         updateVideoSize();
     });
     
@@ -741,35 +733,6 @@ newQuestionBtn.addEventListener('click', () => {
     
     // 固定widthをリセット（新しい質問時は再計算可能にする）
     fixedOverlayWidth = null;
-    
-    // updateVideoSize() の非同期処理が完了する前に、正しい位置を設定
-    requestAnimationFrame(() => {
-        const container = contentArea.querySelector('.video-container');
-        if (container && overlay && displayImage) {
-            const mediaRect = displayImage.getBoundingClientRect();
-            const containerRect = container.getBoundingClientRect();
-            
-            if (mediaRect && containerRect) {
-                const mediaHeight = mediaRect.height;
-                const mediaTop = mediaRect.top;
-                const containerTop = containerRect.top;
-                
-                const overlayTopPercent = OVERLAY_TOP_PERCENT_QUESTION;
-                let overlayBottomPercent = overlayBottomPercent_Normal;
-                if (isShowingAnswer && answerText && answerText.textContent && answerText.textContent.length >= 7) {
-                    overlayBottomPercent = overlayBottomPercent_LongAnswer;
-                }
-                const overlayHeight = mediaHeight * (overlayBottomPercent - overlayTopPercent) / 100;
-                const overlayTopInContainer = (mediaTop - containerTop) + (mediaHeight * overlayTopPercent / 100);
-                const distanceFromContainerBottom = containerRect.height - (overlayTopInContainer + overlayHeight);
-                
-                overlay.style.bottom = `${distanceFromContainerBottom}px`;
-                overlay.style.height = `${overlayHeight}px`;
-                overlay.style.maxHeight = `${overlayHeight}px`;
-                overlay.style.minHeight = `${overlayHeight}px`;
-            }
-        }
-    });
     
     // isShowingAnswer = false の状態で updateVideoSize() を呼ぶ
     updateVideoSize();
