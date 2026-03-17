@@ -51,7 +51,7 @@ body {
 }
 
 .content-area {
-    transition: all 0.3s ease;
+    transition: opacity 0.3s ease, transform 0.3s ease;
     width: 100%;
     display: flex;
     align-items: center;
@@ -222,7 +222,7 @@ body {
     justify-content: center;
     background: transparent;
     overflow: hidden;
-    transition: all 0.3s ease;
+    transition: opacity 0.3s ease, transform 0.3s ease;
     position: absolute;
     top: 50%;
     left: 50%;

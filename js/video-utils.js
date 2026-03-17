@@ -38,8 +38,9 @@ function calculateVideoSize() {
 
 /**
  * 動画・画像サイズを更新する関数
+ * @param {boolean} [immediate=false] - trueの場合、overlayの高さ計算を遅延なしで即時実行（回答表示時のチカつき防止）
  */
-function updateVideoSize() {
+function updateVideoSize(immediate = false) {
     const isMobilePortrait = window.innerWidth < 768 && window.innerHeight > window.innerWidth;
     const mediaElements = document.querySelectorAll('.main-video');
     
@@ -62,7 +63,9 @@ function updateVideoSize() {
         });
     }
     
-    // 動画・画像のサイズ設定後にテキストボックスの幅と位置を調整（少し遅延を入れる）
+    // 動画・画像のサイズ設定後にテキストボックスの幅と位置を調整
+    // 回答表示時(immediate)は遅延なしで即時実行し、チカつきを防ぐ
+    const overlayDelay = immediate ? 0 : 50;
     requestAnimationFrame(() => {
         requestAnimationFrame(() => {
             setTimeout(() => {
@@ -85,7 +88,7 @@ function updateVideoSize() {
                     const overlayHeight = updateOverlaySizeAndPosition(mediaRect, containerRect, overlayWidth);
                     adjustOverlayContentHeight(overlayHeight);
                 }
-            }, 50); // 遅延を増やして、要素が確実にレンダリングされた後に高さを取得
+            }, overlayDelay);
         });
     });
 }

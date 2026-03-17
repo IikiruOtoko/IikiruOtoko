@@ -114,16 +114,12 @@ function setupFormSubmitHandler() {
                 } else {
                     // TIME_ANSWER_DISPLAY 以降
                     if (answerData) {
-                        // API結果が返ってきている場合、overlay を表示し、答えを表示
-                        // まず overlay を表示状態にしてから位置を更新する
-                        overlay.style.display = 'block';
-                        isShowingAnswer = true; // 答えを表示しているので true
-                        // テキストを先に更新してから、updateVideoSize()で正しい高さを計算する
+                        // overlay表示前に状態とテキストを更新し、正しい高さを同期計算する
+                        isShowingAnswer = true;
                         changeTextAndFontSizeImmediately(answerData, FontSizeBig);
-                        // DOMの更新が反映された後にupdateVideoSize()を呼ぶ
-                        requestAnimationFrame(() => {
-                            updateVideoSize();
-                        });
+                        updateOverlayPositionSync();
+                        // 正しい高さがセットされた状態で表示（チカつき防止）
+                        overlay.style.display = 'block';
                         
                         // 回答表示完了のイベントを送信（一度だけ）
                         if (!hasTrackedAnswerDisplay) {

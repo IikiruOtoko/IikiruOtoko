@@ -115,6 +115,25 @@ function updateOverlaySizeAndPosition(mediaRect, containerRect, overlayWidth) {
 }
 
 /**
+ * overlayのサイズと位置を同期的に更新する（rAFやsetTimeout遅延なし）
+ * overlay表示前に呼ぶことで、表示時のチカつきを防ぐ
+ */
+function updateOverlayPositionSync() {
+    const container = contentArea.querySelector('.video-container');
+    const currentMedia = displayImage.classList.contains('hidden') ? answerVideo : displayImage;
+    if (!container || !currentMedia || !overlay) return;
+
+    const mediaRect = currentMedia.getBoundingClientRect();
+    const containerRect = container.getBoundingClientRect();
+    if (mediaRect.height <= 0 || containerRect.height <= 0) return;
+
+    const isMobilePortrait = window.innerWidth < 768 && window.innerHeight > window.innerWidth;
+    const overlayWidth = calculateOverlayWidth(mediaRect, isMobilePortrait, null, currentMedia);
+    const overlayHeight = updateOverlaySizeAndPosition(mediaRect, containerRect, overlayWidth);
+    adjustOverlayContentHeight(overlayHeight);
+}
+
+/**
  * overlayの内部要素の高さを調整
  * @param {number} overlayHeight - overlayの高さ
  */
