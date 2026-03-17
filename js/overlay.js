@@ -127,7 +127,7 @@ function updateOverlayPositionSync() {
     const containerRect = container.getBoundingClientRect();
     if (mediaRect.height <= 0 || containerRect.height <= 0) return;
 
-    const isMobilePortrait = window.innerWidth < 768 && window.innerHeight > window.innerWidth;
+    const isMobilePortrait = window.innerWidth < TABLET_MAX_WIDTH && window.innerHeight > window.innerWidth;
     const overlayWidth = calculateOverlayWidth(mediaRect, isMobilePortrait, null, currentMedia);
     const overlayHeight = updateOverlaySizeAndPosition(mediaRect, containerRect, overlayWidth);
     adjustOverlayContentHeight(overlayHeight);

@@ -9,7 +9,7 @@ function calculateVideoSize() {
     const containerWidth = window.innerWidth * 0.9; // 90% of viewport width
     
     // スマホ（縦）の場合は横幅いっぱいにする
-    const isMobilePortrait = window.innerWidth < 768 && window.innerHeight > window.innerWidth;
+    const isMobilePortrait = window.innerWidth < TABLET_MAX_WIDTH && window.innerHeight > window.innerWidth;
     
     if (isMobilePortrait) {
         // スマホ（縦）の場合は横幅いっぱい、高さは画面に収まる範囲で最大に
@@ -41,7 +41,7 @@ function calculateVideoSize() {
  * @param {boolean} [immediate=false] - trueの場合、overlayの高さ計算を遅延なしで即時実行（回答表示時のチカつき防止）
  */
 function updateVideoSize(immediate = false) {
-    const isMobilePortrait = window.innerWidth < 768 && window.innerHeight > window.innerWidth;
+    const isMobilePortrait = window.innerWidth < TABLET_MAX_WIDTH && window.innerHeight > window.innerWidth;
     const mediaElements = document.querySelectorAll('.main-video');
     
     // 動画サイズを計算（デスクトップの場合）
